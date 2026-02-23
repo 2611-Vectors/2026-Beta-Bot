@@ -5,7 +5,6 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TransitionConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
@@ -13,8 +12,8 @@ import frc.robot.VectorKit.tuners.pidTuner;
 
 public class Transition extends SubsystemBase {
   /** Creates a new Transition. */
-
   KrakenX60 lowerMotor = new KrakenX60(TransitionConstants.LOWER_MOTOR_ID);
+
   KrakenX60 upperLeftMotor = new KrakenX60(TransitionConstants.UPPER_LEFT_MOTOR_ID);
   KrakenX60 upperRightMotor = new KrakenX60(TransitionConstants.UPPER_RIGHT_MOTOR_ID);
 

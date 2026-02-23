@@ -12,8 +12,8 @@ import frc.robot.VectorKit.tuners.pidTuner;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
-
   KrakenX60 intakeMotor = new KrakenX60(IntakeConstants.WHEEL_MOTOR_ID);
+
   KrakenX60 pivotMotor = new KrakenX60(IntakeConstants.PIVOT_MOTOR_ID);
 
   // TODO: Make Tunable

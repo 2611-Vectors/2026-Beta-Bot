@@ -11,7 +11,6 @@ import frc.robot.VectorKit.tuners.pidTuner;
 
 public class FullSend extends SubsystemBase {
   /** Creates a new FullSend. */
-
   KrakenX60 fullSendMotor = new KrakenX60(FullSendConstants.MAIN_MOTOR_ID);
 
   // TODO: Tune and set defaults
