@@ -4,20 +4,19 @@
 
 package frc.robot.VectorKit.tuners;
 
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 /** Add your docs here. */
 public class TunablePidController {
-    private final SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0, 0);
-    private final PIDController pid = new PIDController(0, 0, 0);
+  private final SimpleMotorFeedforward ff = new SimpleMotorFeedforward(0, 0);
+  private final PIDController pid = new PIDController(0, 0, 0);
 
-    private final LoggedNetworkNumber loggedP, loggedI, loggedD, loggedS, loggedV, loggedTargetVel;
-    private double kP, kI, kD, kS, kV, targetVel;
+  private final LoggedNetworkNumber loggedP, loggedI, loggedD, loggedS, loggedV, loggedTargetVel;
+  private double kP, kI, kD, kS, kV, targetVel;
 
-    public TunablePidController(String folder) {
+  public TunablePidController(String folder) {
     loggedP = new LoggedNetworkNumber(String.format("%s/P", folder), 0.0);
     loggedI = new LoggedNetworkNumber(String.format("%s/I", folder), 0.0);
     loggedD = new LoggedNetworkNumber(String.format("%s/D", folder), 0.0);
@@ -35,13 +34,15 @@ public class TunablePidController {
     loggedTargetVel = new LoggedNetworkNumber(String.format("%s/Target Velocity", folder), 0.0);
   }
 
-  public TunablePidController(String folder, double P, double I, double D, double S, double V, double targetVel) {
+  public TunablePidController(
+      String folder, double P, double I, double D, double S, double V, double targetVel) {
     loggedP = new LoggedNetworkNumber(String.format("%s/P", folder), P);
     loggedI = new LoggedNetworkNumber(String.format("%s/I", folder), I);
     loggedD = new LoggedNetworkNumber(String.format("%s/D", folder), D);
     loggedS = new LoggedNetworkNumber(String.format("%s/S", folder), S);
     loggedV = new LoggedNetworkNumber(String.format("%s/V", folder), V);
-    loggedTargetVel = new LoggedNetworkNumber(String.format("%s/Target Velocity", folder), targetVel);
+    loggedTargetVel =
+        new LoggedNetworkNumber(String.format("%s/Target Velocity", folder), targetVel);
   }
 
   public void update() {
@@ -70,8 +71,7 @@ public class TunablePidController {
       ff.setKv(kV);
     }
 
-    if (targetVel != loggedTargetVel.get())
-        targetVel = loggedTargetVel.get();
+    if (targetVel != loggedTargetVel.get()) targetVel = loggedTargetVel.get();
   }
 
   public double getP() {

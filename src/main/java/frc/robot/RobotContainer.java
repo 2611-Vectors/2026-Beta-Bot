@@ -18,9 +18,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
-import frc.robot.Constants.VisionConstants;
-import frc.robot.VectorKit.vision.Vision;
-import frc.robot.VectorKit.vision.VisionIOPhotonVision;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.FullSend;
@@ -48,11 +45,13 @@ public class RobotContainer {
   private final Intake m_Intake;
   private final Transition m_Transition;
   private final FullSend m_FullSend;
-  private final Vision m_Vision;
+  //   private final Vision m_Vision;
 
   // Controller
-  private final CommandXboxController m_DriverController = new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_ID);
-  private final CommandXboxController m_OperatorController = new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_ID);
+  private final CommandXboxController m_DriverController =
+      new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_ID);
+  private final CommandXboxController m_OperatorController =
+      new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_ID);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -77,10 +76,11 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
-        m_Vision = 
-            new Vision(
-                m_Drive::addVisionMeasurement,
-                new VisionIOPhotonVision(VisionConstants.RightRearCam, VisionConstants.robotToRightRearCam));
+        // m_Vision =
+        //     new Vision(
+        //         m_Drive::addVisionMeasurement,
+        //         new VisionIOPhotonVision(VisionConstants.RightRearCam,
+        // VisionConstants.robotToRightRearCam));
 
         break;
 
@@ -94,7 +94,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
 
-        m_Vision = null;
+        // m_Vision = null;
 
         break;
 
@@ -108,7 +108,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
 
-        m_Vision = null;
+        // m_Vision = null;
 
         break;
     }
@@ -190,13 +190,11 @@ public class RobotContainer {
         .whileTrue(
             new ParallelCommandGroup(
                 m_FullSend.manualFullSendRPM(() -> false),
-                m_Transition.manualLowerTransitionRPM(() -> false),
-                m_Transition.manualUpperTransitionRPM(() -> false)))
+                m_Transition.manualTransitionRPM(() -> false)))
         .onFalse(
             new ParallelCommandGroup(
-                m_FullSend.setFullSendVoltage(() -> 0.0), 
-                m_Transition.setUpperTransitioVoltage(() -> 0.0),
-                m_Transition.setLowerTransitionVoltage(() -> 0.0)));
+                m_FullSend.setFullSendVoltage(() -> 0.0),
+                m_Transition.setTransitioVoltage(() -> 0.0)));
 
     m_DriverController
         .rightBumper()
@@ -207,7 +205,7 @@ public class RobotContainer {
                 m_Transition.manualUpperTransitionRPM(() -> true)))
         .onFalse(
             new ParallelCommandGroup(
-                m_FullSend.setFullSendVoltage(() -> 0.0), 
+                m_FullSend.setFullSendVoltage(() -> 0.0),
                 m_Transition.setUpperTransitioVoltage(() -> 0.0),
                 m_Transition.setLowerTransitionVoltage(() -> 0.0)));
 

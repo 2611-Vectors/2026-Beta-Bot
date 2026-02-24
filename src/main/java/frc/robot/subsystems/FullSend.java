@@ -6,19 +6,16 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RPM;
 
-import java.util.function.Supplier;
-
-import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FullSendConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
 import frc.robot.VectorKit.tuners.PidTuner;
+import java.util.function.Supplier;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class FullSend extends SubsystemBase {
   /** Creates a new FullSend. */
-
   private final KrakenX60 fullSendMotor = new KrakenX60(FullSendConstants.MAIN_MOTOR_ID);
 
   // TODO: Tune and set defaults
@@ -27,20 +24,23 @@ public class FullSend extends SubsystemBase {
   public FullSend() {}
 
   public Command setFullSendVoltage(Supplier<Double> voltage) {
-    return run(() -> {
-      fullSendMotor.setVoltage(voltage.get());;
-    });
+    return run(
+        () -> {
+          fullSendMotor.setVoltage(voltage.get());
+          ;
+        });
   }
-  
+
   public Command setFullSendRPM(Supplier<Double> rpm) {
-    return run(() -> {
-      fullSendMotor.setVelocity(rpm.get(), RPM);
-    });
+    return run(
+        () -> {
+          fullSendMotor.setVelocity(rpm.get(), RPM);
+        });
   }
 
   public Command manualFullSendRPM(Supplier<Boolean> reverse) {
     LoggedNetworkNumber rpm = new LoggedNetworkNumber("/FullSend/Target RPM", 0.0);
-    return setFullSendRPM(() -> (reverse.get() ? rpm.get():-rpm.get()));
+    return setFullSendRPM(() -> (reverse.get() ? rpm.get() : -rpm.get()));
   }
 
   @Override
