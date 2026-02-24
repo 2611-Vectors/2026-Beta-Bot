@@ -8,6 +8,7 @@ import static edu.wpi.first.units.Units.RPM;
 
 import java.util.function.Supplier;
 
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
@@ -32,6 +33,14 @@ public class Intake extends SubsystemBase {
 
   public Intake() {}
 
+  public double getPivotAngle() {
+    double a = pivotEncoder.get() * 360.0;
+    a -= IntakeConstants.PIVOT_ENCODER_OFFSET;
+    a = Math.abs(a % 360);
+
+    return a;
+  }
+
   public Command setPivotVoltage(Supplier<Double> voltage) {
     return runOnce(() -> {
       pivotMotor.setVoltage(voltage.get());
@@ -39,9 +48,12 @@ public class Intake extends SubsystemBase {
   }
 
   public Command setPivotPosition(Supplier<Double> position) {
-    return run(() -> {
-      pivotMotor.setVoltage(pivotController.calculate(pivotEncoder.get(), position.get()));
-    });
+    return setPivotVoltage(() -> pivotController.calculate(getPivotAngle(), position.get()));
+  }
+
+  public Command manualPivotVoltage() {
+    LoggedNetworkNumber voltage = new LoggedNetworkNumber("/Intake/Pivot/Voltage", 0.0);
+    return setPivotVoltage(() -> voltage.get());
   }
 
   public Command setIntakeVoltage(Supplier<Double> voltage) {
@@ -56,14 +68,16 @@ public class Intake extends SubsystemBase {
     });
   }
 
-  public Command manualIntakeRPM() {
+  public Command manualIntakeRPM(Supplier<Boolean> reverse) {
     LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 0.0);
-    return setIntakeRPM(() -> rpm.get());
+    return setIntakeRPM(() -> (reverse.get() ? rpm.get():-rpm.get()));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    Logger.recordOutput("/Intake/Pivot/Current Angle", getPivotAngle());
+    Logger.recordOutput("/Intake/Pivot/New Offset", pivotEncoder.get() * 360.0);
     if (intakePidTuner.updated()) intakeMotor.updateFromTuner(intakePidTuner);
     pivotController.update();
   }

@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.VectorKit.vision.Vision;
 import frc.robot.VectorKit.vision.VisionIOPhotonVision;
@@ -49,7 +50,8 @@ public class RobotContainer {
   private final Vision m_Vision;
 
   // Controller
-  private final CommandXboxController controller = new CommandXboxController(0);
+  private final CommandXboxController m_DriverController = new CommandXboxController(ControllerConstants.DRIVER_CONTROLLER_ID);
+  private final CommandXboxController m_OperatorController = new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_ID);
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -144,25 +146,25 @@ public class RobotContainer {
     m_Drive.setDefaultCommand(
         DriveCommands.joystickDrive(
             m_Drive,
-            () -> -controller.getLeftY(),
-            () -> -controller.getLeftX(),
-            () -> -controller.getRightX()));
+            () -> -m_DriverController.getLeftY(),
+            () -> -m_DriverController.getLeftX(),
+            () -> -m_DriverController.getRightX()));
 
     // Lock to 0° when A button is held
-    controller
+    m_DriverController
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
                 m_Drive,
-                () -> -controller.getLeftY(),
-                () -> -controller.getLeftX(),
+                () -> -m_DriverController.getLeftY(),
+                () -> -m_DriverController.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(m_Drive::stopWithX, m_Drive));
+    m_DriverController.x().onTrue(Commands.runOnce(m_Drive::stopWithX, m_Drive));
 
     // Reset gyro to 0° when Back button is pressed
-    controller
+    m_DriverController
         .back()
         .onTrue(
             Commands.runOnce(
@@ -171,6 +173,16 @@ public class RobotContainer {
                             new Pose2d(m_Drive.getPose().getTranslation(), Rotation2d.kZero)),
                     m_Drive)
                 .ignoringDisable(true));
+
+    m_OperatorController
+        .rightTrigger()
+        .whileTrue(m_Intake.manualIntakeRPM(() -> false))
+        .onFalse(m_Intake.setIntakeVoltage(() -> 0.0));
+
+    m_OperatorController
+        .rightTrigger()
+        .whileTrue(m_Intake.manualIntakeRPM(() -> true))
+        .onFalse(m_Intake.setIntakeVoltage(() -> 0.0));
   }
 
   /**
