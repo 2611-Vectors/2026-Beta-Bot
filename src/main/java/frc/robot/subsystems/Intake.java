@@ -4,31 +4,81 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
+import static edu.wpi.first.units.Units.RPM;
+
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
-import frc.robot.VectorKit.tuners.pidTuner;
+import frc.robot.VectorKit.tuners.PidTuner;
+import frc.robot.VectorKit.tuners.TunablePidController;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
-  KrakenX60 intakeMotor = new KrakenX60(IntakeConstants.WHEEL_MOTOR_ID);
 
-  KrakenX60 pivotMotor = new KrakenX60(IntakeConstants.PIVOT_MOTOR_ID);
+  private final KrakenX60 intakeMotor = new KrakenX60(IntakeConstants.WHEEL_MOTOR_ID);
+  private final KrakenX60 pivotMotor = new KrakenX60(IntakeConstants.PIVOT_MOTOR_ID);
 
-  // TODO: Make Tunable
-  PIDController pivotController = new PIDController(0, 0, 0);
+  private final DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(IntakeConstants.PIVOT_ENCODER_ID);
 
   // TODO: Tune and set defaults
-  pidTuner intakePidTuner = new pidTuner("/Intake/", 0.0, 0.0, 0.0, 0.0, 0.0);
-
-  // TODO: Add encoder things later
+  private final PidTuner intakePidTuner = new PidTuner("/Intake/", 0.0, 0.0, 0.0, 0.0, 0.0);
+  private final TunablePidController pivotController = new TunablePidController("/Intake/Pivot/", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
   public Intake() {}
+
+  public double getPivotAngle() {
+    double a = pivotEncoder.get() * 360.0;
+    a -= IntakeConstants.PIVOT_ENCODER_OFFSET;
+    a = Math.abs(a % 360);
+
+    return a;
+  }
+
+  public Command setPivotVoltage(Supplier<Double> voltage) {
+    return runOnce(() -> {
+      pivotMotor.setVoltage(voltage.get());
+    });
+  }
+
+  public Command setPivotPosition(Supplier<Double> position) {
+    return setPivotVoltage(() -> pivotController.calculate(getPivotAngle(), position.get()));
+  }
+
+  public Command manualPivotVoltage() {
+    LoggedNetworkNumber voltage = new LoggedNetworkNumber("/Intake/Pivot/Voltage", 0.0);
+    return setPivotVoltage(() -> voltage.get());
+  }
+
+  public Command setIntakeVoltage(Supplier<Double> voltage) {
+    return runOnce(() -> {
+      intakeMotor.setVoltage(voltage.get());
+    });
+  }
+
+  public Command setIntakeRPM(Supplier<Double> rpm) {
+    return run(() -> {
+      intakeMotor.setVelocity(rpm.get(), RPM);
+    });
+  }
+
+  public Command manualIntakeRPM(Supplier<Boolean> reverse) {
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 0.0);
+    return setIntakeRPM(() -> (reverse.get() ? rpm.get():-rpm.get()));
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    Logger.recordOutput("/Intake/Pivot/Current Angle", getPivotAngle());
+    Logger.recordOutput("/Intake/Pivot/New Offset", pivotEncoder.get() * 360.0);
     if (intakePidTuner.updated()) intakeMotor.updateFromTuner(intakePidTuner);
+    pivotController.update();
   }
 }
