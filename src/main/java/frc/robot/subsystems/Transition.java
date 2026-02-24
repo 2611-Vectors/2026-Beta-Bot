@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -13,6 +14,7 @@ import frc.robot.Constants.TransitionConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
 import frc.robot.VectorKit.tuners.PidTuner;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Transition extends SubsystemBase {
@@ -22,33 +24,33 @@ public class Transition extends SubsystemBase {
   private final KrakenX60 upperLeftMotor = new KrakenX60(TransitionConstants.UPPER_LEFT_MOTOR_ID);
   private final KrakenX60 upperRightMotor = new KrakenX60(TransitionConstants.UPPER_RIGHT_MOTOR_ID);
 
-  // TODO: Tune and set defaults
-  private final PidTuner lowerTransitionpPidTuner =
-      new PidTuner("/Transition/Lower/", 0.0, 0.0, 0.0, 0.0, 0.0);
+  private final PidTuner lowerTransitionPidTuner =
+      new PidTuner("/Transition/Lower/", 0.1, 0.02, 0.0, 0.0, 0.14);
   private final PidTuner upperTransitionPidTuner =
-      new PidTuner("/Transition/Upper/", 0.0, 0.0, 0.0, 0.0, 0.0);
+      new PidTuner("/Transition/Upper/", 0.1, 0.02, 0.0, 0.0, 0.11);
 
   public Transition() {
     upperLeftMotor.setFollower(upperRightMotor, MotorAlignmentValue.Opposed);
+    upperLeftMotor.setInverted(InvertedValue.Clockwise_Positive);
+    lowerMotor.setInverted(InvertedValue.Clockwise_Positive);
   }
 
   public Command setUpperTransitioVoltage(Supplier<Double> voltage) {
     return run(
         () -> {
           upperLeftMotor.setVoltage(voltage.get());
-          ;
         });
   }
 
   public Command setUpperTransitionRPM(Supplier<Double> rpm) {
     return run(
         () -> {
-          upperLeftMotor.setVelocity(rpm.get(), RPM);
+          upperLeftMotor.setVelocity(rpm.get() * TransitionConstants.UPPER_GEAR_RATIO, RPM);
         });
   }
 
   public Command manualUpperTransitionRPM(Supplier<Boolean> reverse) {
-    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Upper/Target RPM", 0.0);
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Upper/Target RPM", 1000.0);
     return setUpperTransitionRPM(() -> (reverse.get() ? rpm.get() : -rpm.get()));
   }
 
@@ -67,36 +69,47 @@ public class Transition extends SubsystemBase {
   }
 
   public Command manualLowerTransitionRPM(Supplier<Boolean> reverse) {
-    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 0.0);
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 1000.0);
     return setLowerTransitionRPM(() -> (reverse.get() ? rpm.get() : -rpm.get()));
   }
 
-  public Command setTransitionVoltage(Supplier<Double> upperVoltage, Supplier<Double> lowerVoltage) {
-    return run(() -> {
-      lowerMotor.setVoltage(lowerVoltage.get());
-      upperLeftMotor.setVoltage(upperVoltage.get());
-    });
+  public Command setTransitionVoltage(
+      Supplier<Double> upperVoltage, Supplier<Double> lowerVoltage) {
+    return run(
+        () -> {
+          lowerMotor.setVoltage(lowerVoltage.get());
+          upperLeftMotor.setVoltage(upperVoltage.get());
+        });
   }
 
   public Command setTransitionRPM(Supplier<Double> upperRPM, Supplier<Double> lowerRPM) {
-    return run(() -> {
-      lowerMotor.setVelocity(lowerRPM.get(), RPM);
-      upperLeftMotor.setVelocity(upperRPM.get(), RPM);
-    });
+    return run(
+        () -> {
+          lowerMotor.setVelocity(lowerRPM.get(), RPM);
+          upperLeftMotor.setVelocity(upperRPM.get() * TransitionConstants.UPPER_GEAR_RATIO, RPM);
+        });
   }
 
   public Command manualTransitionRPM(Supplier<Boolean> reverse) {
-    LoggedNetworkNumber lowerRPM = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 0.0);
-    LoggedNetworkNumber upperRPM = new LoggedNetworkNumber("/Transition/Upper/Target RPM", 0.0);
+    LoggedNetworkNumber lowerRPM = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 1000.0);
+    LoggedNetworkNumber upperRPM = new LoggedNetworkNumber("/Transition/Upper/Target RPM", 1000.0);
     return setTransitionRPM(
-      () -> (reverse.get() ? upperRPM.get() : -upperRPM.get()), 
-      () -> (reverse.get() ? lowerRPM.get() : -lowerRPM.get()));
+        () -> (reverse.get() ? upperRPM.get() : -upperRPM.get()),
+        () -> (reverse.get() ? lowerRPM.get() : -lowerRPM.get()));
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    if (lowerTransitionpPidTuner.updated()) lowerMotor.updateFromTuner(lowerTransitionpPidTuner);
-    if (upperTransitionPidTuner.updated()) upperLeftMotor.updateFromTuner(lowerTransitionpPidTuner);
+    if (lowerTransitionPidTuner.updated()) lowerMotor.updateFromTuner(lowerTransitionPidTuner);
+    if (upperTransitionPidTuner.updated()) upperLeftMotor.updateFromTuner(upperTransitionPidTuner);
+
+    Logger.recordOutput(
+        "/Transition/Lower/Current RPM", lowerMotor.getVelocity().getValueAsDouble() * 60);
+    Logger.recordOutput(
+        "/Transition/Upper/Current Left RPM", upperLeftMotor.getVelocity().getValueAsDouble() * 60);
+    Logger.recordOutput(
+        "/Transition/Upper/Current Right RPM",
+        upperRightMotor.getVelocity().getValueAsDouble() * 60);
   }
 }

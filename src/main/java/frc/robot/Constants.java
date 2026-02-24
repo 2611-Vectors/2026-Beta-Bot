@@ -56,7 +56,7 @@ public final class Constants {
     public static final int WHEEL_MOTOR_ID = 31;
 
     public static final int PIVOT_ENCODER_ID = 0;
-    public static final double PIVOT_ENCODER_OFFSET = 0.0;
+    public static final double PIVOT_ENCODER_OFFSET = 54.6;
 
     public static final double PIVOT_ANGLE_TOLERANCE = 0.5;
     public static final double PIVOT_IN_ANGLE = 0.0;
@@ -67,6 +67,9 @@ public final class Constants {
     public static final int UPPER_LEFT_MOTOR_ID = 41;
     public static final int UPPER_RIGHT_MOTOR_ID = 42;
     public static final int LOWER_MOTOR_ID = 52;
+
+    public static final double UPPER_GEAR_RATIO = 1.0 / 3.0;
+    public static final double LOWER_GEAR_RATIO = 1.0;
   }
 
   public static class VisionConstants {

@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
-import frc.robot.VectorKit.hardware.WCP_0408;
 import frc.robot.VectorKit.tuners.PidTuner;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Shooter extends SubsystemBase {
@@ -24,11 +24,6 @@ public class Shooter extends SubsystemBase {
   private final KrakenX60 leftMotor = new KrakenX60(ShooterConstants.LEFT_MOTOR_ID);
 
   private final KrakenX60 rightMotor = new KrakenX60(ShooterConstants.RIGHT_MOTOR_ID);
-
-  private final WCP_0408 leftLinearActuator =
-      new WCP_0408(ShooterConstants.LEFT_LINEAR_ACTUATOR_ID);
-  private final WCP_0408 rightLinearActuator =
-      new WCP_0408(ShooterConstants.RIGHT_LINEAR_ACTUATOR_ID);
 
   // TODO: Tune and set defaults
   PidTuner shooterPidTuner = new PidTuner("/Shooter/", 0.0, 0.0, 0.0, 0.0, 0.0);
@@ -66,22 +61,10 @@ public class Shooter extends SubsystemBase {
             });
   }
 
-  public Command setHoodPos(Supplier<Double> pos) {
-    return run(
-        () -> {
-          leftLinearActuator.set(pos.get());
-          rightLinearActuator.set(pos.get());
-        });
-  }
-
-  public Command manualHoodPos() {
-    LoggedNetworkNumber pos = new LoggedNetworkNumber("/Shooter/Hood Position", 0.0);
-    return setHoodPos(() -> pos.get());
-  }
-
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     if (shooterPidTuner.updated()) leftMotor.updateFromTuner(shooterPidTuner);
+    Logger.recordOutput("/Shooter/Current RPM", leftMotor.getVelocity().getValueAsDouble() * 60);
   }
 }

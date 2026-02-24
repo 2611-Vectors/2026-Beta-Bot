@@ -21,6 +21,7 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.FullSend;
+import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
@@ -45,6 +46,7 @@ public class RobotContainer {
   private final Intake m_Intake;
   private final Transition m_Transition;
   private final FullSend m_FullSend;
+  private final Hood m_Hood;
   //   private final Vision m_Vision;
 
   // Controller
@@ -62,6 +64,7 @@ public class RobotContainer {
     m_Transition = new Transition();
     m_Intake = new Intake();
     m_FullSend = new FullSend();
+    m_Hood = new Hood();
 
     switch (Constants.currentMode) {
       case REAL:
@@ -181,7 +184,7 @@ public class RobotContainer {
         .onFalse(m_Intake.setIntakeVoltage(() -> 0.0));
 
     m_OperatorController
-        .rightTrigger()
+        .leftTrigger()
         .whileTrue(m_Intake.manualIntakeRPM(() -> true))
         .onFalse(m_Intake.setIntakeVoltage(() -> 0.0));
 
@@ -194,22 +197,21 @@ public class RobotContainer {
         .onFalse(
             new ParallelCommandGroup(
                 m_FullSend.setFullSendVoltage(() -> 0.0),
-                m_Transition.setTransitioVoltage(() -> 0.0)));
+                m_Transition.setTransitionVoltage(() -> 0.0, () -> 0.0)));
 
     m_DriverController
         .rightBumper()
         .whileTrue(
             new ParallelCommandGroup(
                 m_FullSend.manualFullSendRPM(() -> true),
-                m_Transition.manualLowerTransitionRPM(() -> true),
-                m_Transition.manualUpperTransitionRPM(() -> true)))
+                m_Transition.manualTransitionRPM(() -> true)))
         .onFalse(
             new ParallelCommandGroup(
                 m_FullSend.setFullSendVoltage(() -> 0.0),
-                m_Transition.setUpperTransitioVoltage(() -> 0.0),
-                m_Transition.setLowerTransitionVoltage(() -> 0.0)));
+                m_Transition.setTransitionVoltage(() -> 0.0, () -> 0.0)));
 
     m_OperatorController.y().toggleOnTrue(m_Shooter.manualShooterRPM());
+    m_Hood.setDefaultCommand(m_Hood.manualHoodPos());
   }
 
   /**

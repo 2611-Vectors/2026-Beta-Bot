@@ -6,10 +6,10 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RPM;
 
-import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
+import frc.robot.VectorKit.hardware.AbsoluteEncoder;
 import frc.robot.VectorKit.hardware.KrakenX60;
 import frc.robot.VectorKit.tuners.PidTuner;
 import frc.robot.VectorKit.tuners.TunablePidController;
@@ -23,23 +23,15 @@ public class Intake extends SubsystemBase {
 
   private final KrakenX60 pivotMotor = new KrakenX60(IntakeConstants.PIVOT_MOTOR_ID);
 
-  private final DutyCycleEncoder pivotEncoder =
-      new DutyCycleEncoder(IntakeConstants.PIVOT_ENCODER_ID);
+  private final AbsoluteEncoder pivotEncoder =
+      new AbsoluteEncoder(IntakeConstants.PIVOT_ENCODER_ID, IntakeConstants.PIVOT_ENCODER_OFFSET);
 
   // TODO: Tune and set defaults
-  private final PidTuner intakePidTuner = new PidTuner("/Intake/", 0.0, 0.0, 0.0, 0.0, 0.0);
+  private final PidTuner intakePidTuner = new PidTuner("/Intake/", 0.1, 0.02, 0.0, 0.0, 0.13);
   private final TunablePidController pivotController =
       new TunablePidController("/Intake/Pivot/", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
   public Intake() {}
-
-  public double getPivotAngle() {
-    double a = pivotEncoder.get() * 360.0;
-    a -= IntakeConstants.PIVOT_ENCODER_OFFSET;
-    a = Math.abs(a % 360);
-
-    return a;
-  }
 
   public Command setPivotVoltage(Supplier<Double> voltage) {
     return runOnce(
@@ -49,7 +41,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command setPivotPosition(Supplier<Double> position) {
-    return setPivotVoltage(() -> pivotController.calculate(getPivotAngle(), position.get()));
+    return setPivotVoltage(() -> pivotController.calculate(pivotEncoder.get(), position.get()));
   }
 
   public Command manualPivotVoltage() {
@@ -79,9 +71,13 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    Logger.recordOutput("/Intake/Pivot/Current Angle", getPivotAngle());
-    Logger.recordOutput("/Intake/Pivot/New Offset", pivotEncoder.get() * 360.0);
+    Logger.recordOutput("/Intake/Pivot/Current Angle", pivotEncoder.get());
+    Logger.recordOutput("/Intake/Pivot/New Offset", (pivotEncoder.getRaw() * 360.0) - 0.5);
     if (intakePidTuner.updated()) intakeMotor.updateFromTuner(intakePidTuner);
     pivotController.update();
+
+    Logger.recordOutput(
+        "/Intake/Pivot/Current RPM", pivotMotor.getVelocity().getValueAsDouble() * 60);
+    Logger.recordOutput("/Intake/Current RPM", intakeMotor.getVelocity().getValueAsDouble() * 60);
   }
 }
