@@ -35,28 +35,28 @@ public final class Constants {
   }
 
   public static class ShooterConstants {
-    public static final int LEFT_MOTOR_ID = 0;
-    public static final int RIGHT_MOTOR_ID = 0;
+    public static final int LEFT_MOTOR_ID = 61;
+    public static final int RIGHT_MOTOR_ID = 62;
 
     public static final int LEFT_LINEAR_ACTUATOR_ID = 0;
-    public static final int RIGHT_LINEAR_ACTUATOR_ID = 0;
+    public static final int RIGHT_LINEAR_ACTUATOR_ID = 1;
   }
 
   public static class FullSendConstants {
-    public static final int MAIN_MOTOR_ID = 0;
+    public static final int MAIN_MOTOR_ID = 60;
   }
 
   public static class IntakeConstants {
-    public static final int PIVOT_MOTOR_ID = 0;
-    public static final int WHEEL_MOTOR_ID = 0;
+    public static final int PIVOT_MOTOR_ID = 32;
+    public static final int WHEEL_MOTOR_ID = 31;
 
     public static final int PIVOT_ENCODER_ID = 0;
   }
 
   public static class TransitionConstants {
-    public static final int UPPER_LEFT_MOTOR_ID = 0;
-    public static final int UPPER_RIGHT_MOTOR_ID = 0;
-    public static final int LOWER_MOTOR_ID = 0;
+    public static final int UPPER_LEFT_MOTOR_ID = 41;
+    public static final int UPPER_RIGHT_MOTOR_ID = 42;
+    public static final int LOWER_MOTOR_ID = 52;
   }
 
   public static class VisionConstants {
