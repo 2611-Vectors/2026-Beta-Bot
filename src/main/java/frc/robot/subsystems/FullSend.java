@@ -42,7 +42,7 @@ public class FullSend extends SubsystemBase {
   }
 
   public Command manualFullSendRPM(Supplier<Boolean> reverse) {
-    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/FullSend/Target RPM", 1000.0);
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/FullSend/Target RPM", 4000.0);
     return setFullSendRPM(() -> (reverse.get() ? rpm.get() : -rpm.get()));
   }
 

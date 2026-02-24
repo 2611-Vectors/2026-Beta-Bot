@@ -64,7 +64,7 @@ public class Intake extends SubsystemBase {
   }
 
   public Command manualIntakeRPM(Supplier<Boolean> reverse) {
-    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 0.0);
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 2000.0);
     return setIntakeRPM(() -> (reverse.get() ? rpm.get() : -rpm.get()));
   }
 

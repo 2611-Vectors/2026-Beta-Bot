@@ -91,7 +91,7 @@ public class Transition extends SubsystemBase {
   }
 
   public Command manualTransitionRPM(Supplier<Boolean> reverse) {
-    LoggedNetworkNumber lowerRPM = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 1000.0);
+    LoggedNetworkNumber lowerRPM = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 3000.0);
     LoggedNetworkNumber upperRPM = new LoggedNetworkNumber("/Transition/Upper/Target RPM", 1000.0);
     return setTransitionRPM(
         () -> (reverse.get() ? upperRPM.get() : -upperRPM.get()),

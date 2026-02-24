@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
   private final KrakenX60 rightMotor = new KrakenX60(ShooterConstants.RIGHT_MOTOR_ID);
 
   // TODO: Tune and set defaults
-  PidTuner shooterPidTuner = new PidTuner("/Shooter/", 0.0, 0.0, 0.0, 0.0, 0.0);
+  PidTuner shooterPidTuner = new PidTuner("/Shooter/", 0.2, 0.02, 0.0, 0.0, 0.12);
 
   // Max RPM / Seconds to max RPM
   SlewRateLimiter RPMSlew = new SlewRateLimiter(6000.0 / 3.0);
@@ -44,7 +44,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command manualShooterRPM() {
-    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Shooter/Target RPM", 0.0);
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Shooter/Target RPM", 3500.0);
     return new SequentialCommandGroup(
             runOnce(
                 () -> {

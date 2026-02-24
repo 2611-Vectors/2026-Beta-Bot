@@ -30,7 +30,7 @@ public class Hood extends SubsystemBase {
   }
 
   public Command manualHoodPos() {
-    LoggedNetworkNumber pos = new LoggedNetworkNumber("/Shooter/Hood Position", 0.0);
+    LoggedNetworkNumber pos = new LoggedNetworkNumber("/Shooter/Hood Position", 0.4);
     return setHoodPos(() -> pos.get());
   }
 
