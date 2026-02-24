@@ -4,6 +4,13 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RPM;
+
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.FullSendConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
@@ -18,6 +25,17 @@ public class FullSend extends SubsystemBase {
   private final PidTuner fullSendPidTuner = new PidTuner("/FullSend/", 0.0, 0.0, 0.0, 0.0, 0.0);
 
   public FullSend() {}
+  
+  public Command setFullSendRPM(Supplier<Double> rpm) {
+    return run(() -> {
+      fullSendMotor.setVelocity(rpm.get(), RPM);
+    });
+  }
+
+  public Command manualFullSendRPM() {
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/FullSend/Target RPM", 0.0);
+    return setFullSendRPM(() -> rpm.get());
+  }
 
   @Override
   public void periodic() {

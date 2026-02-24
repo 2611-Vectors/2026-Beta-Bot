@@ -4,7 +4,15 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RPM;
+
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.TransitionConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
@@ -23,6 +31,28 @@ public class Transition extends SubsystemBase {
 
   public Transition() {
     upperLeftMotor.setFollower(upperRightMotor, MotorAlignmentValue.Opposed);
+  }
+
+  public Command setUpperTransitionRPM(Supplier<Double> rpm) {
+    return run(() -> {
+      upperLeftMotor.setVelocity(rpm.get(), RPM);
+    });
+  }
+
+  public Command manualUpperTransitionRPM() {
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Upper/Target RPM", 0.0);
+    return setUpperTransitionRPM(() -> rpm.get());
+  }
+
+  public Command setLowerTransitionRPM(Supplier<Double> rpm) {
+    return run(() -> {
+      lowerMotor.setVelocity(rpm.get(), RPM);
+    });
+  }
+
+  public Command manualLowerTransitionRPM() {
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 0.0);
+    return setLowerTransitionRPM(() -> rpm.get());
   }
 
   @Override

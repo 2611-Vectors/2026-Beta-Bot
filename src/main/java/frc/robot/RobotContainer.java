@@ -16,8 +16,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.VectorKit.vision.Vision;
+import frc.robot.VectorKit.vision.VisionIOPhotonVision;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
+import frc.robot.subsystems.FullSend;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Shooter;
+import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.subsystems.drive.GyroIO;
 import frc.robot.subsystems.drive.GyroIOPigeon2;
@@ -34,7 +41,12 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
  */
 public class RobotContainer {
   // Subsystems
-  private final Drive drive;
+  private final Drive m_Drive;
+  private final Shooter m_Shooter;
+  private final Intake m_Intake;
+  private final Transition m_Transition;
+  private final FullSend m_FullSend;
+  private final Vision m_Vision;
 
   // Controller
   private final CommandXboxController controller = new CommandXboxController(0);
@@ -44,12 +56,17 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    m_Shooter = new Shooter();
+    m_Transition = new Transition();
+    m_Intake = new Intake();
+    m_FullSend = new FullSend();
+
     switch (Constants.currentMode) {
       case REAL:
         // Real robot, instantiate hardware IO implementations
         // ModuleIOTalonFX is intended for modules with TalonFX drive, TalonFX turn, and
         // a CANcoder
-        drive =
+        m_Drive =
             new Drive(
                 new GyroIOPigeon2(),
                 new ModuleIOTalonFX(TunerConstants.FrontLeft),
@@ -57,45 +74,39 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
-        // The ModuleIOTalonFXS implementation provides an example implementation for
-        // TalonFXS controller connected to a CANdi with a PWM encoder. The
-        // implementations
-        // of ModuleIOTalonFX, ModuleIOTalonFXS, and ModuleIOSpark (from the Spark
-        // swerve
-        // template) can be freely intermixed to support alternative hardware
-        // arrangements.
-        // Please see the AdvantageKit template documentation for more information:
-        // https://docs.advantagekit.org/getting-started/template-projects/talonfx-swerve-template#custom-module-implementations
-        //
-        // drive =
-        // new Drive(
-        // new GyroIOPigeon2(),
-        // new ModuleIOTalonFXS(TunerConstants.FrontLeft),
-        // new ModuleIOTalonFXS(TunerConstants.FrontRight),
-        // new ModuleIOTalonFXS(TunerConstants.BackLeft),
-        // new ModuleIOTalonFXS(TunerConstants.BackRight));
+        m_Vision = 
+            new Vision(
+                m_Drive::addVisionMeasurement,
+                new VisionIOPhotonVision(VisionConstants.RightRearCam, VisionConstants.robotToRightRearCam));
+
         break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
-        drive =
+        m_Drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIOSim(TunerConstants.FrontLeft),
                 new ModuleIOSim(TunerConstants.FrontRight),
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
+
+        m_Vision = null;
+
         break;
 
       default:
         // Replayed robot, disable IO implementations
-        drive =
+        m_Drive =
             new Drive(
                 new GyroIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
+
+        m_Vision = null;
+
         break;
     }
 
@@ -104,19 +115,19 @@ public class RobotContainer {
 
     // Set up SysId routines
     autoChooser.addOption(
-        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(drive));
+        "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_Drive));
     autoChooser.addOption(
-        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(drive));
+        "Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_Drive));
     autoChooser.addOption(
         "Drive SysId (Quasistatic Forward)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        m_Drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
         "Drive SysId (Quasistatic Reverse)",
-        drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        m_Drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
     autoChooser.addOption(
-        "Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        "Drive SysId (Dynamic Forward)", m_Drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
     autoChooser.addOption(
-        "Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        "Drive SysId (Dynamic Reverse)", m_Drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
     // Configure the button bindings
     configureButtonBindings();
@@ -130,9 +141,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // Default command, normal field-relative drive
-    drive.setDefaultCommand(
+    m_Drive.setDefaultCommand(
         DriveCommands.joystickDrive(
-            drive,
+            m_Drive,
             () -> -controller.getLeftY(),
             () -> -controller.getLeftX(),
             () -> -controller.getRightX()));
@@ -142,23 +153,23 @@ public class RobotContainer {
         .a()
         .whileTrue(
             DriveCommands.joystickDriveAtAngle(
-                drive,
+                m_Drive,
                 () -> -controller.getLeftY(),
                 () -> -controller.getLeftX(),
                 () -> Rotation2d.kZero));
 
     // Switch to X pattern when X button is pressed
-    controller.x().onTrue(Commands.runOnce(drive::stopWithX, drive));
+    controller.x().onTrue(Commands.runOnce(m_Drive::stopWithX, m_Drive));
 
-    // Reset gyro to 0° when B button is pressed
+    // Reset gyro to 0° when Back button is pressed
     controller
-        .b()
+        .back()
         .onTrue(
             Commands.runOnce(
                     () ->
-                        drive.setPose(
-                            new Pose2d(drive.getPose().getTranslation(), Rotation2d.kZero)),
-                    drive)
+                        m_Drive.setPose(
+                            new Pose2d(m_Drive.getPose().getTranslation(), Rotation2d.kZero)),
+                    m_Drive)
                 .ignoringDisable(true));
   }
 

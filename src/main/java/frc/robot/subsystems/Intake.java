@@ -4,6 +4,12 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RPM;
+
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -22,14 +28,37 @@ public class Intake extends SubsystemBase {
 
   // TODO: Tune and set defaults
   private final PidTuner intakePidTuner = new PidTuner("/Intake/", 0.0, 0.0, 0.0, 0.0, 0.0);
-  private final TunablePidController pivotController = new TunablePidController("Intake/Pivot/", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
+  private final TunablePidController pivotController = new TunablePidController("/Intake/Pivot/", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
   public Intake() {}
 
-  public Command setIntakePosition() {
-    return run(() -> {
-
+  public Command setPivotVoltage(Supplier<Double> voltage) {
+    return runOnce(() -> {
+      pivotMotor.setVoltage(voltage.get());
     });
+  }
+
+  public Command setPivotPosition(Supplier<Double> position) {
+    return run(() -> {
+      pivotMotor.setVoltage(pivotController.calculate(pivotEncoder.get(), position.get()));
+    });
+  }
+
+  public Command setIntakeVoltage(Supplier<Double> voltage) {
+    return runOnce(() -> {
+      intakeMotor.setVoltage(voltage.get());
+    });
+  }
+
+  public Command setIntakeRPM(Supplier<Double> rpm) {
+    return run(() -> {
+      intakeMotor.setVelocity(rpm.get(), RPM);
+    });
+  }
+
+  public Command manualIntakeRPM() {
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 0.0);
+    return setIntakeRPM(() -> rpm.get());
   }
 
   @Override

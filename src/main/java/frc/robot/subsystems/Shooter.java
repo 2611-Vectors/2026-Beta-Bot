@@ -4,8 +4,16 @@
 
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.RPM;
+
+import java.util.function.Supplier;
+
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
+
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
@@ -26,6 +34,29 @@ public class Shooter extends SubsystemBase {
   public Shooter() {
     leftMotor.setFollower(rightMotor, MotorAlignmentValue.Opposed);
     leftMotor.setInverted(InvertedValue.CounterClockwise_Positive);
+  }
+
+  public Command setShooterRPM(Supplier<Double> rpm) {
+    return run(() -> {
+      leftMotor.setVelocity(rpm.get(), RPM);
+    });
+  }
+
+  public Command manualIntakeRPM() {
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Shooter/Target RPM", 0.0);
+    return setShooterRPM(() -> rpm.get());
+  }
+
+  public Command setHoodPos(Supplier<Double> pos) {
+    return run(() -> {
+      leftLinearActuator.set(pos.get());
+      rightLinearActuator.set(pos.get());
+    });
+  }
+
+  public Command manualHoodPos() {
+    LoggedNetworkNumber pos = new LoggedNetworkNumber("/Shooter/Hood Position", 0.0);
+    return setHoodPos(() -> pos.get());
   }
 
   @Override
