@@ -13,7 +13,9 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
 
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
@@ -31,20 +33,37 @@ public class Shooter extends SubsystemBase {
   // TODO: Tune and set defaults
   PidTuner shooterPidTuner = new PidTuner("/Shooter/", 0.0, 0.0, 0.0, 0.0, 0.0);
 
+  // Max RPM / Seconds to max RPM
+  SlewRateLimiter RPMSlew = new SlewRateLimiter(6000.0 / 3.0);
+
   public Shooter() {
     leftMotor.setFollower(rightMotor, MotorAlignmentValue.Opposed);
     leftMotor.setInverted(InvertedValue.CounterClockwise_Positive);
   }
 
   public Command setShooterRPM(Supplier<Double> rpm) {
-    return run(() -> {
-      leftMotor.setVelocity(rpm.get(), RPM);
-    });
+    return run(
+        () -> {
+          leftMotor.setVelocity(rpm.get(), RPM);
+        });
   }
 
-  public Command manualIntakeRPM() {
+  public Command manualShooterRPM() {
     LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Shooter/Target RPM", 0.0);
-    return setShooterRPM(() -> rpm.get());
+    return new SequentialCommandGroup(
+            runOnce(
+                () -> {
+                  RPMSlew.reset(leftMotor.getVelocity().getValueAsDouble() * 60);
+                }),
+            run(
+                () -> {
+                  double filtered = RPMSlew.calculate(rpm.get());
+                  leftMotor.setVelocity(filtered, RPM);
+                }))
+        .handleInterrupt(
+            () -> {
+              leftMotor.set(0.0);
+            });
   }
 
   public Command setHoodPos(Supplier<Double> pos) {

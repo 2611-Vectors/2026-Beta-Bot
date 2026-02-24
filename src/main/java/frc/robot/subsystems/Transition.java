@@ -33,15 +33,27 @@ public class Transition extends SubsystemBase {
     upperLeftMotor.setFollower(upperRightMotor, MotorAlignmentValue.Opposed);
   }
 
+  public Command setUpperTransitioVoltage(Supplier<Double> voltage) {
+    return run(() -> {
+      upperLeftMotor.setVoltage(voltage.get());;
+    });
+  }
+
   public Command setUpperTransitionRPM(Supplier<Double> rpm) {
     return run(() -> {
       upperLeftMotor.setVelocity(rpm.get(), RPM);
     });
   }
 
-  public Command manualUpperTransitionRPM() {
+  public Command manualUpperTransitionRPM(Supplier<Boolean> reverse) {
     LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Upper/Target RPM", 0.0);
-    return setUpperTransitionRPM(() -> rpm.get());
+    return setUpperTransitionRPM(() -> (reverse.get() ? rpm.get():-rpm.get()));
+  }
+
+  public Command setLowerTransitionVoltage(Supplier<Double> voltage) {
+    return run(() -> {
+      lowerMotor.setVoltage(voltage.get());;
+    });
   }
 
   public Command setLowerTransitionRPM(Supplier<Double> rpm) {
@@ -50,9 +62,9 @@ public class Transition extends SubsystemBase {
     });
   }
 
-  public Command manualLowerTransitionRPM() {
+  public Command manualLowerTransitionRPM(Supplier<Boolean> reverse) {
     LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 0.0);
-    return setLowerTransitionRPM(() -> rpm.get());
+    return setLowerTransitionRPM(() -> (reverse.get() ? rpm.get():-rpm.get()));
   }
 
   @Override

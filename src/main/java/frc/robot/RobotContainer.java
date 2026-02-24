@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
@@ -183,6 +184,34 @@ public class RobotContainer {
         .rightTrigger()
         .whileTrue(m_Intake.manualIntakeRPM(() -> true))
         .onFalse(m_Intake.setIntakeVoltage(() -> 0.0));
+
+    m_DriverController
+        .rightTrigger()
+        .whileTrue(
+            new ParallelCommandGroup(
+                m_FullSend.manualFullSendRPM(() -> false),
+                m_Transition.manualLowerTransitionRPM(() -> false),
+                m_Transition.manualUpperTransitionRPM(() -> false)))
+        .onFalse(
+            new ParallelCommandGroup(
+                m_FullSend.setFullSendVoltage(() -> 0.0), 
+                m_Transition.setUpperTransitioVoltage(() -> 0.0),
+                m_Transition.setLowerTransitionVoltage(() -> 0.0)));
+
+    m_DriverController
+        .rightBumper()
+        .whileTrue(
+            new ParallelCommandGroup(
+                m_FullSend.manualFullSendRPM(() -> true),
+                m_Transition.manualLowerTransitionRPM(() -> true),
+                m_Transition.manualUpperTransitionRPM(() -> true)))
+        .onFalse(
+            new ParallelCommandGroup(
+                m_FullSend.setFullSendVoltage(() -> 0.0), 
+                m_Transition.setUpperTransitioVoltage(() -> 0.0),
+                m_Transition.setLowerTransitionVoltage(() -> 0.0)));
+
+    m_OperatorController.y().toggleOnTrue(m_Shooter.manualShooterRPM());
   }
 
   /**

@@ -25,6 +25,12 @@ public class FullSend extends SubsystemBase {
   private final PidTuner fullSendPidTuner = new PidTuner("/FullSend/", 0.0, 0.0, 0.0, 0.0, 0.0);
 
   public FullSend() {}
+
+  public Command setFullSendVoltage(Supplier<Double> voltage) {
+    return run(() -> {
+      fullSendMotor.setVoltage(voltage.get());;
+    });
+  }
   
   public Command setFullSendRPM(Supplier<Double> rpm) {
     return run(() -> {
@@ -32,9 +38,9 @@ public class FullSend extends SubsystemBase {
     });
   }
 
-  public Command manualFullSendRPM() {
+  public Command manualFullSendRPM(Supplier<Boolean> reverse) {
     LoggedNetworkNumber rpm = new LoggedNetworkNumber("/FullSend/Target RPM", 0.0);
-    return setFullSendRPM(() -> rpm.get());
+    return setFullSendRPM(() -> (reverse.get() ? rpm.get():-rpm.get()));
   }
 
   @Override
