@@ -11,18 +11,18 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
 import frc.robot.VectorKit.hardware.WCP_0408;
-import frc.robot.VectorKit.tuners.pidTuner;
+import frc.robot.VectorKit.tuners.PidTuner;
 
 public class Shooter extends SubsystemBase {
   /** Creates a new Shooter. */
-  KrakenX60 leftMotor = new KrakenX60(ShooterConstants.LEFT_MOTOR_ID);
-  KrakenX60 rightMotor = new KrakenX60(ShooterConstants.RIGHT_MOTOR_ID);
+  private final KrakenX60 leftMotor = new KrakenX60(ShooterConstants.LEFT_MOTOR_ID);
+  private final KrakenX60 rightMotor = new KrakenX60(ShooterConstants.RIGHT_MOTOR_ID);
 
-  WCP_0408 leftLinearActuator = new WCP_0408(ShooterConstants.LEFT_LINEAR_ACTUATOR_ID);
-  WCP_0408 rightLinearActuator = new WCP_0408(ShooterConstants.RIGHT_LINEAR_ACTUATOR_ID);
+  private final WCP_0408 leftLinearActuator = new WCP_0408(ShooterConstants.LEFT_LINEAR_ACTUATOR_ID);
+  private final WCP_0408 rightLinearActuator = new WCP_0408(ShooterConstants.RIGHT_LINEAR_ACTUATOR_ID);
 
   // TODO: Tune and set defaults
-  pidTuner shooterPidTuner = new pidTuner("/Shooter/", 0.0, 0.0, 0.0, 0.0, 0.0);
+  PidTuner shooterPidTuner = new PidTuner("/Shooter/", 0.0, 0.0, 0.0, 0.0, 0.0);
 
   public Shooter() {
     leftMotor.setFollower(rightMotor, MotorAlignmentValue.Opposed);

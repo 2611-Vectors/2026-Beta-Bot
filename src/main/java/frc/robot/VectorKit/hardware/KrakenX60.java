@@ -17,7 +17,7 @@ import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
-import frc.robot.VectorKit.tuners.pidTuner;
+import frc.robot.VectorKit.tuners.PidTuner;
 import java.util.function.Supplier;
 
 public class KrakenX60 extends TalonFX {
@@ -123,7 +123,7 @@ public class KrakenX60 extends TalonFX {
     super.getConfigurator().apply(slot0Configs);
   }
 
-  public void updateFromTuner(pidTuner tuner) {
+  public void updateFromTuner(PidTuner tuner) {
     slot0Configs.kP = tuner.getP();
     slot0Configs.kI = tuner.getI();
     slot0Configs.kD = tuner.getD();

@@ -4,31 +4,38 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DutyCycleEncoder;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.VectorKit.hardware.KrakenX60;
-import frc.robot.VectorKit.tuners.pidTuner;
+import frc.robot.VectorKit.tuners.PidTuner;
+import frc.robot.VectorKit.tuners.TunablePidController;
 
 public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
 
-  KrakenX60 intakeMotor = new KrakenX60(IntakeConstants.WHEEL_MOTOR_ID);
-  KrakenX60 pivotMotor = new KrakenX60(IntakeConstants.PIVOT_MOTOR_ID);
+  private final KrakenX60 intakeMotor = new KrakenX60(IntakeConstants.WHEEL_MOTOR_ID);
+  private final KrakenX60 pivotMotor = new KrakenX60(IntakeConstants.PIVOT_MOTOR_ID);
 
-  // TODO: Make Tunable
-  PIDController pivotController = new PIDController(0, 0, 0);
+  private final DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(IntakeConstants.PIVOT_ENCODER_ID);
 
   // TODO: Tune and set defaults
-  pidTuner intakePidTuner = new pidTuner("/Intake/", 0.0, 0.0, 0.0, 0.0, 0.0);
-
-  // TODO: Add encoder things later
+  private final PidTuner intakePidTuner = new PidTuner("/Intake/", 0.0, 0.0, 0.0, 0.0, 0.0);
+  private final TunablePidController pivotController = new TunablePidController("Intake/Pivot/", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
   public Intake() {}
+
+  public Command setIntakePosition() {
+    return run(() -> {
+
+    });
+  }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     if (intakePidTuner.updated()) intakeMotor.updateFromTuner(intakePidTuner);
+    pivotController.update();
   }
 }
