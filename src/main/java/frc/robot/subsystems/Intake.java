@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.IntakeConstants;
@@ -31,7 +32,10 @@ public class Intake extends SubsystemBase {
   private final TunablePidController pivotController =
       new TunablePidController("/Intake/Pivot/", 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
 
-  public Intake() {}
+  public Intake() {
+    pivotEncoder.setInverted(true);
+    pivotMotor.setBrakeMode(NeutralModeValue.Brake);
+  }
 
   public Command setPivotVoltage(Supplier<Double> voltage) {
     return runOnce(
@@ -47,6 +51,11 @@ public class Intake extends SubsystemBase {
   public Command manualPivotVoltage() {
     LoggedNetworkNumber voltage = new LoggedNetworkNumber("/Intake/Pivot/Voltage", 0.0);
     return setPivotVoltage(() -> voltage.get());
+  }
+
+  public Command manualPivotPosition() {
+    LoggedNetworkNumber pos = new LoggedNetworkNumber("/Intake/Pivot/Target Position", 0.0);
+    return setPivotPosition(() -> pos.get());
   }
 
   public Command setIntakeVoltage(Supplier<Double> voltage) {

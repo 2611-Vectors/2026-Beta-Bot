@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.sim.TalonFXSimState;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
@@ -62,6 +63,11 @@ public class KrakenX60 extends TalonFX {
 
   public void setInverted(InvertedValue direction) {
     motorOutputConfigs.Inverted = direction;
+    super.getConfigurator().apply(motorOutputConfigs);
+  }
+
+  public void setBrakeMode(NeutralModeValue mode) {
+    motorOutputConfigs.NeutralMode = mode;
     super.getConfigurator().apply(motorOutputConfigs);
   }
 

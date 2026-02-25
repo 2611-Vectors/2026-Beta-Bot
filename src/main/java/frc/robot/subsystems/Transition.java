@@ -86,7 +86,7 @@ public class Transition extends SubsystemBase {
     return run(
         () -> {
           lowerMotor.setVelocity(lowerRPM.get(), RPM);
-          upperLeftMotor.setVelocity(upperRPM.get() * TransitionConstants.UPPER_GEAR_RATIO, RPM);
+          upperLeftMotor.setVelocity(upperRPM.get() / TransitionConstants.UPPER_GEAR_RATIO, RPM);
         });
   }
 

@@ -212,6 +212,11 @@ public class RobotContainer {
 
     m_OperatorController.y().toggleOnTrue(m_Shooter.manualShooterRPM());
     m_Hood.setDefaultCommand(m_Hood.manualHoodPos());
+
+    // m_OperatorController
+    //     .a()
+    //     .whileTrue(m_Intake.manualPivotVoltage())
+    //     .onFalse(m_Intake.setPivotVoltage(() -> 0.0));
   }
 
   /**

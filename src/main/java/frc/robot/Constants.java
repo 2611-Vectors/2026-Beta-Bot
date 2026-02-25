@@ -56,11 +56,11 @@ public final class Constants {
     public static final int WHEEL_MOTOR_ID = 31;
 
     public static final int PIVOT_ENCODER_ID = 0;
-    public static final double PIVOT_ENCODER_OFFSET = 54.6;
+    public static final double PIVOT_ENCODER_OFFSET = 304.0;
 
     public static final double PIVOT_ANGLE_TOLERANCE = 0.5;
-    public static final double PIVOT_IN_ANGLE = 0.0;
-    public static final double PIVOT_OUT_ANGLE = 0.0;
+    public static final double PIVOT_IN_ANGLE = 1.5;
+    public static final double PIVOT_OUT_ANGLE = 132.0;
   }
 
   public static class TransitionConstants {
