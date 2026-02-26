@@ -24,13 +24,19 @@ public class Hood extends SubsystemBase {
   public Command setHoodPos(Supplier<Double> pos) {
     return run(
         () -> {
-          leftLinearActuator.set(pos.get());
-          rightLinearActuator.set(pos.get());
+          double posActual = pos.get(); // 0.65 is our current minimum (2/26)
+          if (posActual < ShooterConstants.LINEAR_ACTUATOR_MINIMUM)
+            posActual = ShooterConstants.LINEAR_ACTUATOR_MINIMUM;
+          if (posActual > ShooterConstants.LINEAR_ACTUATOR_MAXIMUM)
+            posActual = ShooterConstants.LINEAR_ACTUATOR_MAXIMUM;
+
+          leftLinearActuator.set(posActual);
+          rightLinearActuator.set(posActual);
         });
   }
 
   public Command manualHoodPos() {
-    LoggedNetworkNumber pos = new LoggedNetworkNumber("/Shooter/Hood Position", 0.55);
+    LoggedNetworkNumber pos = new LoggedNetworkNumber("/Shooter/Hood Position", 0.65);
     return setHoodPos(() -> pos.get());
   }
 

@@ -44,7 +44,7 @@ public class Shooter extends SubsystemBase {
   }
 
   public Command manualShooterRPM() {
-    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Shooter/Target RPM", 3400.0);
+    LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Shooter/Target RPM", 2900.0);
     return new SequentialCommandGroup(
             runOnce(
                 () -> {

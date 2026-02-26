@@ -18,6 +18,9 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
+import frc.robot.Constants.VisionConstants;
+import frc.robot.VectorKit.vision.Vision;
+import frc.robot.VectorKit.vision.VisionIOPhotonVision;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.FullSend;
@@ -47,7 +50,7 @@ public class RobotContainer {
   private final Transition m_Transition;
   private final FullSend m_FullSend;
   private final Hood m_Hood;
-  //   private final Vision m_Vision;
+  private final Vision m_Vision;
 
   // Controller
   private final CommandXboxController m_DriverController =
@@ -79,11 +82,17 @@ public class RobotContainer {
                 new ModuleIOTalonFX(TunerConstants.BackLeft),
                 new ModuleIOTalonFX(TunerConstants.BackRight));
 
-        // m_Vision =
-        //     new Vision(
-        //         m_Drive::addVisionMeasurement,
-        //         new VisionIOPhotonVision(VisionConstants.RightRearCam,
-        // VisionConstants.robotToRightRearCam));
+        m_Vision =
+            new Vision(
+                m_Drive::addVisionMeasurement,
+                new VisionIOPhotonVision(
+                    VisionConstants.RightRearCam, VisionConstants.robotToRightRearCam),
+                new VisionIOPhotonVision(
+                    VisionConstants.LeftRearCam, VisionConstants.robotToLeftRearCam),
+                new VisionIOPhotonVision(
+                    VisionConstants.RightFrontCam, VisionConstants.robotToRightFrontCam),
+                new VisionIOPhotonVision(
+                    VisionConstants.LeftFrontCam, VisionConstants.robotToLeftFrontCam));
 
         break;
 
@@ -97,7 +106,7 @@ public class RobotContainer {
                 new ModuleIOSim(TunerConstants.BackLeft),
                 new ModuleIOSim(TunerConstants.BackRight));
 
-        // m_Vision = null;
+        m_Vision = null;
 
         break;
 
@@ -111,7 +120,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {});
 
-        // m_Vision = null;
+        m_Vision = null;
 
         break;
     }
@@ -214,9 +223,9 @@ public class RobotContainer {
     m_Hood.setDefaultCommand(m_Hood.manualHoodPos());
 
     // m_OperatorController
-    //     .a()
-    //     .whileTrue(m_Intake.manualPivotVoltage())
-    //     .onFalse(m_Intake.setPivotVoltage(() -> 0.0));
+    // .a()
+    // .whileTrue(m_Intake.manualPivotVoltage())
+    // .onFalse(m_Intake.setPivotVoltage(() -> 0.0));
   }
 
   /**
