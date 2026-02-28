@@ -88,5 +88,8 @@ public class Intake extends SubsystemBase {
     Logger.recordOutput(
         "/Intake/Pivot/Current RPM", pivotMotor.getVelocity().getValueAsDouble() * 60);
     Logger.recordOutput("/Intake/Current RPM", intakeMotor.getVelocity().getValueAsDouble() * 60);
+
+    intakeMotor.logCurrents("/Intake");
+    pivotMotor.logCurrents("/Intake/Pivot");
   }
 }

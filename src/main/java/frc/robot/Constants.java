@@ -51,11 +51,8 @@ public final class Constants {
     public static final double LINEAR_ACTUATOR_MINIMUM = 0.65;
     public static final double LINEAR_ACTUATOR_MAXIMUM = 1.0;
 
-    public static final Transform2d ROBOT_TO_SHOOTER = new Transform2d(
-      Units.inchesToMeters(0),
-      Units.inchesToMeters(0),
-      new Rotation2d()
-    );
+    public static final Transform2d ROBOT_TO_SHOOTER =
+        new Transform2d(Units.inchesToMeters(0), Units.inchesToMeters(0), new Rotation2d());
   }
 
   public static class FullSendConstants {
@@ -156,10 +153,8 @@ public final class Constants {
   }
 
   public static class FieldConstants {
-    public static final Transform2d HUB_POSITION = new Transform2d(
-      Units.inchesToMeters(158.84),
-      Units.inchesToMeters(182.11),
-      new Rotation2d()
-    );
+    public static final Transform2d HUB_POSITION =
+        new Transform2d(
+            Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), new Rotation2d());
   }
 }

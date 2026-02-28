@@ -66,5 +66,8 @@ public class Shooter extends SubsystemBase {
     // This method will be called once per scheduler run
     if (shooterPidTuner.updated()) leftMotor.updateFromTuner(shooterPidTuner);
     Logger.recordOutput("/Shooter/Current RPM", leftMotor.getVelocity().getValueAsDouble() * 60);
+
+    leftMotor.logCurrents("/Shooter/Left");
+    rightMotor.logCurrents("Shooter/Right");
   }
 }

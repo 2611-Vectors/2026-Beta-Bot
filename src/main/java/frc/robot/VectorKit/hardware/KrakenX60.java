@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import frc.robot.VectorKit.tuners.PidTuner;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class KrakenX60 extends TalonFX {
   private final Slot0Configs slot0Configs = new Slot0Configs();
@@ -42,6 +43,13 @@ public class KrakenX60 extends TalonFX {
             DCMotor.getKrakenX60Foc(1));
 
     lastTime = m_simTimer.get();
+  }
+
+  public void logCurrents(String path) {
+    Logger.recordOutput(
+        String.format("%s/StatorCurrent", path), super.getStatorCurrent().getValueAsDouble());
+    Logger.recordOutput(
+        String.format("%s/SupplyCurrent", path), super.getSupplyCurrent().getValueAsDouble());
   }
 
   public void updateSim() {

@@ -111,5 +111,9 @@ public class Transition extends SubsystemBase {
     Logger.recordOutput(
         "/Transition/Upper/Current Right RPM",
         upperRightMotor.getVelocity().getValueAsDouble() * 60);
+
+    upperLeftMotor.logCurrents("/Transition/Upper/Left");
+    upperRightMotor.logCurrents("/Transition/Upper/Right");
+    lowerMotor.logCurrents("/Transition/Lower");
   }
 }

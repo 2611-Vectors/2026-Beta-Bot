@@ -53,5 +53,6 @@ public class FullSend extends SubsystemBase {
 
     Logger.recordOutput(
         "/FullSend/Current RPM", fullSendMotor.getVelocity().getValueAsDouble() * 60);
+    fullSendMotor.logCurrents("/FullSend");
   }
 }
