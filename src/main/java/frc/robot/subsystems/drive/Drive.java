@@ -208,7 +208,7 @@ public class Drive extends SubsystemBase {
     // Update gyro alert
     gyroDisconnectedAlert.set(!gyroInputs.connected && Constants.currentMode != Mode.SIM);
 
-    Logger.recordOutput("Targeting/distToHub", AutoMath.getDistanceToHub(getPose()));
+    AutoMath.getDistanceToHub(getPose());
   }
 
   /**

@@ -1,0 +1,54 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.782777777777778,
+        "y": 0.6536777777777774
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.782777777777778,
+        "y": 1.6536777777777774
+      },
+      "isLocked": false,
+      "linkedName": "Start Refuel Right"
+    },
+    {
+      "anchor": {
+        "x": 7.782777777777778,
+        "y": 7.387088888888888
+      },
+      "prevControl": {
+        "x": 7.782777777777778,
+        "y": 6.387088888888888
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "End Refuel Right"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 1.0,
+    "maxAcceleration": 1.0,
+    "maxAngularVelocity": 360.0,
+    "maxAngularAcceleration": 180.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "reversed": false,
+  "folder": "Right",
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 90.0
+  },
+  "useDefaultConstraints": true
+}

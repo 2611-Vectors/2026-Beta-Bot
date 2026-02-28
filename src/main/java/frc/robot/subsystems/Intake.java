@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import static edu.wpi.first.units.Units.RPM;
 
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,6 +36,7 @@ public class Intake extends SubsystemBase {
   public Intake() {
     pivotEncoder.setInverted(true);
     pivotMotor.setBrakeMode(NeutralModeValue.Brake);
+    intakeMotor.setInverted(InvertedValue.Clockwise_Positive);
   }
 
   public Command setPivotVoltage(Supplier<Double> voltage) {
@@ -60,16 +62,23 @@ public class Intake extends SubsystemBase {
 
   public Command setIntakeVoltage(Supplier<Double> voltage) {
     return runOnce(
-        () -> {
-          intakeMotor.setVoltage(voltage.get());
-        });
+            () -> {
+              intakeMotor.setVoltage(voltage.get());
+            })
+        .handleInterrupt(
+            () -> {
+              intakeMotor.setVoltage(0.0);
+            });
   }
 
   public Command setIntakeRPM(Supplier<Double> rpm) {
-    return run(
-        () -> {
+    return run(() -> {
           intakeMotor.setVelocity(rpm.get(), RPM);
-        });
+        })
+        .handleInterrupt(
+            () -> {
+              intakeMotor.setVoltage(0.0);
+            });
   }
 
   public Command manualIntakeRPM(Supplier<Boolean> reverse) {

@@ -8,6 +8,9 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -21,7 +24,10 @@ import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.VectorKit.vision.Vision;
 import frc.robot.VectorKit.vision.VisionIOPhotonVision;
+import frc.robot.commands.AutoTarget;
+import frc.robot.commands.AutoTargetDriverControl;
 import frc.robot.commands.DriveCommands;
+import frc.robot.commands.PathfindToStart;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Hood;
@@ -125,6 +131,13 @@ public class RobotContainer {
         break;
     }
 
+    NamedCommands.registerCommand("autoTarget", new AutoTarget(m_Drive, m_Shooter));
+    NamedCommands.registerCommand("runIntake", m_Intake.setIntakeRPM(() -> 2000.0));
+    NamedCommands.registerCommand(
+        "runTransition", m_Transition.setTransitionRPM(() -> 1000.0, () -> 3000.0));
+    NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
+    NamedCommands.registerCommand("resetHood", m_Hood.setHoodPos(() -> 0.65));
+
     // Set up auto routines
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
@@ -155,6 +168,8 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
   private void configureButtonBindings() {
+    m_Hood.setDefaultCommand(m_Hood.manualHoodPos());
+
     // Default command, normal field-relative drive
     m_Drive.setDefaultCommand(
         DriveCommands.joystickDrive(
@@ -187,45 +202,27 @@ public class RobotContainer {
                     m_Drive)
                 .ignoringDisable(true));
 
-    m_OperatorController
-        .rightTrigger()
-        .whileTrue(m_Intake.manualIntakeRPM(() -> false))
-        .onFalse(m_Intake.setIntakeVoltage(() -> 0.0));
+    m_OperatorController.rightTrigger().whileTrue(m_Intake.manualIntakeRPM(() -> false));
 
-    m_OperatorController
-        .leftTrigger()
-        .whileTrue(m_Intake.manualIntakeRPM(() -> true))
-        .onFalse(m_Intake.setIntakeVoltage(() -> 0.0));
+    m_OperatorController.leftTrigger().whileTrue(m_Intake.manualIntakeRPM(() -> true));
 
     m_DriverController
         .rightTrigger()
         .whileTrue(
             new ParallelCommandGroup(
                 m_FullSend.manualFullSendRPM(() -> false),
-                m_Transition.manualTransitionRPM(() -> false)))
-        .onFalse(
-            new ParallelCommandGroup(
-                m_FullSend.setFullSendVoltage(() -> 0.0),
-                m_Transition.setTransitionVoltage(() -> 0.0, () -> 0.0)));
+                m_Transition.manualTransitionRPM(() -> false)));
 
     m_DriverController
         .rightBumper()
         .whileTrue(
             new ParallelCommandGroup(
                 m_FullSend.manualFullSendRPM(() -> true),
-                m_Transition.manualTransitionRPM(() -> true)))
-        .onFalse(
-            new ParallelCommandGroup(
-                m_FullSend.setFullSendVoltage(() -> 0.0),
-                m_Transition.setTransitionVoltage(() -> 0.0, () -> 0.0)));
+                m_Transition.manualTransitionRPM(() -> true)));
 
-    m_OperatorController.y().toggleOnTrue(m_Shooter.manualShooterRPM());
-    m_Hood.setDefaultCommand(m_Hood.manualHoodPos());
-
-    // m_OperatorController
-    // .a()
-    // .whileTrue(m_Intake.manualPivotVoltage())
-    // .onFalse(m_Intake.setPivotVoltage(() -> 0.0));
+    m_DriverController
+        .leftBumper()
+        .toggleOnTrue(new AutoTargetDriverControl(m_Drive, m_Shooter, m_DriverController));
   }
 
   /**
@@ -234,6 +231,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return autoChooser.get();
+    return new PathfindToStart(new PathPlannerAuto(autoChooser.get().getName()));
   }
 }

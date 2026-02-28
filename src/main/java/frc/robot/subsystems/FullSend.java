@@ -28,17 +28,23 @@ public class FullSend extends SubsystemBase {
   }
 
   public Command setFullSendVoltage(Supplier<Double> voltage) {
-    return run(
-        () -> {
+    return run(() -> {
           fullSendMotor.setVoltage(voltage.get());
-        });
+        })
+        .handleInterrupt(
+            () -> {
+              fullSendMotor.setVoltage(0.0);
+            });
   }
 
   public Command setFullSendRPM(Supplier<Double> rpm) {
-    return run(
-        () -> {
+    return run(() -> {
           fullSendMotor.setVelocity(rpm.get(), RPM);
-        });
+        })
+        .handleInterrupt(
+            () -> {
+              fullSendMotor.setVoltage(0.0);
+            });
   }
 
   public Command manualFullSendRPM(Supplier<Boolean> reverse) {

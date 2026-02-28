@@ -51,8 +51,13 @@ public final class Constants {
     public static final double LINEAR_ACTUATOR_MINIMUM = 0.65;
     public static final double LINEAR_ACTUATOR_MAXIMUM = 1.0;
 
-    public static final Transform2d ROBOT_TO_SHOOTER =
-        new Transform2d(Units.inchesToMeters(0), Units.inchesToMeters(0), new Rotation2d());
+    public static final double TIP_TO_RPM = 250.637;
+    public static final double GRAVITATIONAL_CONSTANT = 9.8;
+    public static final double INITIAL_HEIGHT = 0.4862;
+    public static final double LAUNCH_ANGLE = 1.42;
+    public static final double LAUNCH_ANGLE_COS = 2 * Math.pow(Math.cos(LAUNCH_ANGLE), 2);
+
+    public static final double MAXIMUM_RPM = 4500.0;
   }
 
   public static class FullSendConstants {

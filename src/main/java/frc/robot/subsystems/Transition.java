@@ -36,17 +36,23 @@ public class Transition extends SubsystemBase {
   }
 
   public Command setUpperTransitioVoltage(Supplier<Double> voltage) {
-    return run(
-        () -> {
+    return run(() -> {
           upperLeftMotor.setVoltage(voltage.get());
-        });
+        })
+        .handleInterrupt(
+            () -> {
+              upperLeftMotor.setVoltage(0.0);
+            });
   }
 
   public Command setUpperTransitionRPM(Supplier<Double> rpm) {
-    return run(
-        () -> {
+    return run(() -> {
           upperLeftMotor.setVelocity(rpm.get() * TransitionConstants.UPPER_GEAR_RATIO, RPM);
-        });
+        })
+        .handleInterrupt(
+            () -> {
+              upperLeftMotor.setVoltage(0.0);
+            });
   }
 
   public Command manualUpperTransitionRPM(Supplier<Boolean> reverse) {
@@ -55,17 +61,23 @@ public class Transition extends SubsystemBase {
   }
 
   public Command setLowerTransitionVoltage(Supplier<Double> voltage) {
-    return run(
-        () -> {
+    return run(() -> {
           lowerMotor.setVoltage(voltage.get());
-        });
+        })
+        .handleInterrupt(
+            () -> {
+              lowerMotor.setVoltage(0.0);
+            });
   }
 
   public Command setLowerTransitionRPM(Supplier<Double> rpm) {
-    return run(
-        () -> {
+    return run(() -> {
           lowerMotor.setVelocity(rpm.get(), RPM);
-        });
+        })
+        .handleInterrupt(
+            () -> {
+              lowerMotor.setVoltage(0.0);
+            });
   }
 
   public Command manualLowerTransitionRPM(Supplier<Boolean> reverse) {
@@ -75,19 +87,27 @@ public class Transition extends SubsystemBase {
 
   public Command setTransitionVoltage(
       Supplier<Double> upperVoltage, Supplier<Double> lowerVoltage) {
-    return run(
-        () -> {
+    return run(() -> {
           lowerMotor.setVoltage(lowerVoltage.get());
           upperLeftMotor.setVoltage(upperVoltage.get());
-        });
+        })
+        .handleInterrupt(
+            () -> {
+              lowerMotor.setVoltage(0.0);
+              upperLeftMotor.setVoltage(0.0);
+            });
   }
 
   public Command setTransitionRPM(Supplier<Double> upperRPM, Supplier<Double> lowerRPM) {
-    return run(
-        () -> {
+    return run(() -> {
           lowerMotor.setVelocity(lowerRPM.get(), RPM);
           upperLeftMotor.setVelocity(upperRPM.get() / TransitionConstants.UPPER_GEAR_RATIO, RPM);
-        });
+        })
+        .handleInterrupt(
+            () -> {
+              lowerMotor.setVoltage(0.0);
+              upperLeftMotor.setVoltage(0.0);
+            });
   }
 
   public Command manualTransitionRPM(Supplier<Boolean> reverse) {

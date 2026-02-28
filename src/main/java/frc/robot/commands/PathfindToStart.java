@@ -16,14 +16,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class PathfindToStart extends SequentialCommandGroup {
-  /** Creates a new PathfindToStart. */
   public PathfindToStart(PathPlannerAuto selectedAuto) {
-    // Add your commands in the addCommands() call, e.g.
-    // addCommands(new FooCommand(), new BarCommand());
     Pose2d startPose = flipRed(selectedAuto.getStartingPose());
     PathConstraints constraints = new PathConstraints(1.0, 0.1, 90.0, 720.0);
 
