@@ -11,9 +11,40 @@
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 0.5
+            "pathName": "Left 1"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "runIntake"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "runTransition"
+                }
+              },
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Left Half 2"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Left Half 3"
           }
         },
         {
@@ -59,43 +90,6 @@
                 }
               }
             ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left 1"
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "named",
-                "data": {
-                  "name": "runIntake"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "runTransition"
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Left Half 2"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Left Half 3"
           }
         }
       ]

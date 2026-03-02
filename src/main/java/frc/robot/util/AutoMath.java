@@ -12,6 +12,8 @@ import static frc.robot.Constants.ShooterConstants.TIP_TO_RPM;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import frc.robot.commands.PathfindToStart;
 import org.littletonrobotics.junction.Logger;
 
@@ -35,6 +37,22 @@ public class AutoMath {
 
         Logger.recordOutput("Targeting/distToHub", c);
         return c;
+    }
+
+    public static Pose2d translateTargetByChassisSpeeds(Pose2d robotPose, Pose2d target, ChassisSpeeds speeds) {
+        // TODO: Get a variable for time (fuel in air), and multiply all velos by that variable
+        double dist = getDistanceToTarget(robotPose, target);
+        Pose2d rotVector = new Pose2d(dist, 0, new Rotation2d());
+        rotVector.rotateAround(new Translation2d(0, 0), new Rotation2d(speeds.omegaRadiansPerSecond));
+
+        Pose2d out = new Pose2d(
+                target.getX() + Math.abs(speeds.vxMetersPerSecond) + rotVector.getX(),
+                target.getY() + Math.abs(speeds.vyMetersPerSecond) + rotVector.getY(),
+                target.getRotation());
+
+        Logger.recordOutput("Targeting/Target", target);
+        Logger.recordOutput("Targeting/Target New", out);
+        return out;
     }
 
     public static double getShooterSpeedFromDistance(double dist) {

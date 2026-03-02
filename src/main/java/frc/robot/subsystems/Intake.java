@@ -70,7 +70,7 @@ public class Intake extends SubsystemBase {
 
     public Command setIntakeRPM(Supplier<Double> rpm) {
         return run(() -> {
-                    intakeMotor.setVelocity(rpm.get(), RPM);
+                    intakeMotor.setVelocity(rpm.get() * IntakeConstants.INTAKE_GEAR_RATIO, RPM);
                 })
                 .handleInterrupt(() -> {
                     intakeMotor.setVoltage(0.0);
