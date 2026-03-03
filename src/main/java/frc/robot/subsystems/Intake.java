@@ -35,7 +35,7 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         pivotEncoder.setInverted(true);
-        pivotMotor.setBrakeMode(NeutralModeValue.Brake);
+        pivotMotor.setBrakeMode(NeutralModeValue.Coast);
         intakeMotor.setInverted(InvertedValue.CounterClockwise_Positive);
     }
 
@@ -78,7 +78,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command manualIntakeRPM(Supplier<Boolean> reverse) {
-        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 2000.0);
+        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 2500.0);
         LoggedNetworkNumber revrpm = new LoggedNetworkNumber("/Intake/Target Reverse RPM", 500.0);
         return setIntakeRPM(() -> (reverse.get() ? -revrpm.get() : rpm.get()));
     }
