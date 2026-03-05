@@ -9,8 +9,7 @@ package frc.robot;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
@@ -51,7 +50,7 @@ public final class Constants {
         public static final double LINEAR_ACTUATOR_MINIMUM = 0.65;
         public static final double LINEAR_ACTUATOR_MAXIMUM = 1.0;
 
-        public static final double TIP_TO_RPM = 250.637;
+        public static final double TIP_TO_RPM = 460;
         public static final double GRAVITATIONAL_CONSTANT = 9.8;
         public static final double INITIAL_HEIGHT = 0.4862;
         public static final double LAUNCH_ANGLE = 1.42;
@@ -156,8 +155,8 @@ public final class Constants {
     }
 
     public static class FieldConstants {
-        public static final Pose2d HUB_POSITION =
-                new Pose2d(Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), new Rotation2d());
+        public static final Pose3d HUB_POSITION = new Pose3d(
+                Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Units.inchesToMeters(70), new Rotation3d());
     }
 
     public static class AutoConstants {

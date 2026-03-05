@@ -31,9 +31,9 @@ public class AutoTarget extends SequentialCommandGroup {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
 
-        Supplier<Double> shooterSpeed = () ->
-                AutoMath.getShooterSpeedFromDistance(AutoMath.getDistanceToTarget(m_Drive.getPose(), HUB_POSITION));
-        Supplier<Rotation2d> targetAngle = () -> AutoMath.getRobotAngleToTarget(m_Drive.getPose(), HUB_POSITION);
+        Supplier<Double> shooterSpeed = () -> AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
+        Supplier<Rotation2d> targetAngle =
+                () -> AutoMath.getRobotAngleToTarget(m_Drive.getPose(), HUB_POSITION.toPose2d());
         Supplier<Double> correctedRobotAngle = () -> (Math.abs(
                 m_Drive.getRotation().getDegrees() > 0
                         ? Math.abs(m_Drive.getRotation().getDegrees() - 180.0)

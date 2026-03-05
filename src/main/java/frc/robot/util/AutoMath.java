@@ -8,11 +8,11 @@ import static frc.robot.Constants.ShooterConstants.GRAVITATIONAL_CONSTANT;
 import static frc.robot.Constants.ShooterConstants.INITIAL_HEIGHT;
 import static frc.robot.Constants.ShooterConstants.LAUNCH_ANGLE;
 import static frc.robot.Constants.ShooterConstants.LAUNCH_ANGLE_COS;
-import static frc.robot.Constants.ShooterConstants.TIP_TO_RPM;
 import static frc.robot.Constants.VisionConstants.FIELD_HEIGHT;
 import static frc.robot.Constants.VisionConstants.FIELD_WIDTH;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -44,15 +44,18 @@ public class AutoMath {
         return c;
     }
 
-    public static Pose2d translateTargetByChassisSpeeds(Pose2d robotPose, Pose2d target, ChassisSpeeds speeds) {
-        // TODO: Get a variable for time (fuel in air), and multiply all velos by that variable
-        double dist = getDistanceToTarget(robotPose, target);
-        Pose2d rotVector = new Pose2d(dist, 0, new Rotation2d());
-        rotVector.rotateAround(new Translation2d(0, 0), new Rotation2d(speeds.omegaRadiansPerSecond));
+    public static Pose3d translateTargetByChassisSpeeds(Pose2d robotPose, Pose3d target, ChassisSpeeds speeds) {
+        double dist = getDistanceToTarget(robotPose, target.toPose2d());
+        double speed = getFuelSpeedToTarget(robotPose, target);
+        double time = dist / (speed * Math.cos(LAUNCH_ANGLE));
 
-        Pose2d out = new Pose2d(
-                target.getX() + Math.abs(speeds.vxMetersPerSecond) + rotVector.getX(),
-                target.getY() + Math.abs(speeds.vyMetersPerSecond) + rotVector.getY(),
+        Pose2d rotVector = new Pose2d(dist, 0, new Rotation2d());
+        rotVector.rotateAround(new Translation2d(0, 0), new Rotation2d(speeds.omegaRadiansPerSecond * time));
+
+        Pose3d out = new Pose3d(
+                target.getX() + Math.abs(speeds.vxMetersPerSecond * time) + rotVector.getX(),
+                target.getY() + Math.abs(speeds.vyMetersPerSecond * time) + rotVector.getY(),
+                target.getZ(),
                 target.getRotation());
 
         Logger.recordOutput("Targeting/Target", target);
@@ -60,11 +63,11 @@ public class AutoMath {
         return out;
     }
 
-    public static double getShooterSpeedFromDistance(double dist) {
-        double a = TIP_TO_RPM
-                * Math.sqrt((GRAVITATIONAL_CONSTANT * (dist * dist))
-                        / (LAUNCH_ANGLE_COS * (INITIAL_HEIGHT + Math.tan(LAUNCH_ANGLE) * dist - 5.9)));
-        return a;
+    public static double getFuelSpeedToTarget(Pose2d robotPose, Pose3d target) {
+        double dist = getDistanceToTarget(robotPose, target.toPose2d());
+        double heightDiff = target.getZ() - INITIAL_HEIGHT;
+        return Math.sqrt((GRAVITATIONAL_CONSTANT * (dist * dist))
+                / (LAUNCH_ANGLE_COS * (Math.tan(LAUNCH_ANGLE) * dist - heightDiff)));
     }
 
     public static Pose2d flipRed(Pose2d point) {
