@@ -50,10 +50,11 @@ public final class Constants {
         public static final double LINEAR_ACTUATOR_MINIMUM = 0.65;
         public static final double LINEAR_ACTUATOR_MAXIMUM = 1.0;
 
-        public static final double TIP_TO_RPM = 460;
-        public static final double GRAVITATIONAL_CONSTANT = 9.8;
-        public static final double INITIAL_HEIGHT = 0.4862;
-        public static final double LAUNCH_ANGLE = 1.42;
+        public static final double SHOOTER_WHEEL_DIAMETER = Units.inchesToMeters(3.0);
+        public static final double TIP_TO_RPM = 440.0;
+        public static final double GRAVITATIONAL_CONSTANT = 9.8; // m/s
+        public static final double INITIAL_HEIGHT = Units.inchesToMeters(18.33);
+        public static final double LAUNCH_ANGLE = 0.93;
         public static final double LAUNCH_ANGLE_COS = 2 * Math.pow(Math.cos(LAUNCH_ANGLE), 2);
 
         public static final double MAXIMUM_RPM = 4500.0;
@@ -156,12 +157,15 @@ public final class Constants {
 
     public static class FieldConstants {
         public static final Pose3d HUB_POSITION = new Pose3d(
-                Units.inchesToMeters(182.11), Units.inchesToMeters(158.84), Units.inchesToMeters(70), new Rotation3d());
+                Units.inchesToMeters(182.11),
+                Units.inchesToMeters(158.84),
+                Units.inchesToMeters(70),
+                new Rotation3d()); // Change 5.9 to 70" (2" below top of target)
     }
 
     public static class AutoConstants {
         public static final double ROBOT_MASS_KG = Units.lbsToKilograms(137.95);
-        public static final double ROBOT_MOI = 4.9; // was 6.883
+        public static final double ROBOT_MOI = 4.9;
         public static final double WHEEL_COF_FRICTION = 2.255;
         public static final double ROTATION_ERROR = 2.0;
     }

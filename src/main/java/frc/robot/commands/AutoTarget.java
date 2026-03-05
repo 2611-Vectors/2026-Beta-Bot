@@ -5,6 +5,7 @@
 package frc.robot.commands;
 
 import static frc.robot.Constants.FieldConstants.HUB_POSITION;
+import static frc.robot.Constants.ShooterConstants.TIP_TO_RPM;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -31,7 +32,8 @@ public class AutoTarget extends SequentialCommandGroup {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
 
-        Supplier<Double> shooterSpeed = () -> AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
+        Supplier<Double> shooterSpeed =
+                () -> TIP_TO_RPM * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
         Supplier<Rotation2d> targetAngle =
                 () -> AutoMath.getRobotAngleToTarget(m_Drive.getPose(), HUB_POSITION.toPose2d());
         Supplier<Double> correctedRobotAngle = () -> (Math.abs(
