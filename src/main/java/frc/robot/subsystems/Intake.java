@@ -37,7 +37,7 @@ public class Intake extends SubsystemBase {
         pivotEncoder.setInverted(true);
         pivotMotor.setBrakeMode(NeutralModeValue.Coast);
         pivotMotor.setInverted(InvertedValue.Clockwise_Positive);
-        intakeMotor.setInverted(InvertedValue.CounterClockwise_Positive);
+        intakeMotor.setInverted(InvertedValue.Clockwise_Positive);
     }
 
     public Command setPivotVoltage(Supplier<Double> voltage) {
@@ -100,16 +100,18 @@ public class Intake extends SubsystemBase {
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        Logger.recordOutput("/Intake/Pivot/Current Angle", pivotEncoder.get());
-        Logger.recordOutput("/Intake/Pivot/New Offset", (pivotEncoder.getRaw() * 360.0) - 0.5);
+        Logger.recordOutput("Intake/Pivot/Current Angle", pivotEncoder.get());
+        Logger.recordOutput("Intake/Pivot/New Offset", (pivotEncoder.getRaw() * 360.0) - 0.5);
         if (intakePidTuner.updated()) intakeMotor.updateFromTuner(intakePidTuner);
         pivotController.update();
 
+        Logger.recordOutput("Intake/Pivot/Current RPM (Motor)", pivotMotor.getRPM());
         Logger.recordOutput(
-                "/Intake/Pivot/Current RPM", pivotMotor.getVelocity().getValueAsDouble() * 60);
-        Logger.recordOutput("/Intake/Current RPM", intakeMotor.getVelocity().getValueAsDouble() * 60);
+                "Intake/Pivot/Current RPM (Output)", pivotMotor.getRPM() / IntakeConstants.PIVOT_GEAR_RATIO);
+        Logger.recordOutput("Intake/Current RPM (Motor)", intakeMotor.getRPM());
+        Logger.recordOutput("Intake/Current RPM (Output)", intakeMotor.getRPM() / IntakeConstants.INTAKE_GEAR_RATIO);
 
-        intakeMotor.logCurrents("/Intake");
-        pivotMotor.logCurrents("/Intake/Pivot");
+        intakeMotor.logCurrents("Intake");
+        pivotMotor.logCurrents("Intake/Pivot");
     }
 }

@@ -14,6 +14,7 @@ import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
+import frc.robot.generated.TunerConstants;
 
 /**
  * This class defines the runtime mode used by AdvantageKit. The mode is always "real" when running
@@ -72,7 +73,7 @@ public final class Constants {
         public static final double PIVOT_ENCODER_OFFSET = 304.0;
 
         public static final double PIVOT_GEAR_RATIO = 1.0 / 25.0;
-        public static final double INTAKE_GEAR_RATIO = 1.0 / 3.0;
+        public static final double INTAKE_GEAR_RATIO = 1.0 / 2.0;
 
         public static final double PIVOT_ANGLE_TOLERANCE = 0.5;
         public static final double PIVOT_IN_ANGLE = 1.5;
@@ -85,7 +86,7 @@ public final class Constants {
         public static final int LOWER_MOTOR_ID = 52;
 
         public static final double UPPER_GEAR_RATIO = 1.0 / 3.0;
-        public static final double LOWER_GEAR_RATIO = 1.0;
+        public static final double LOWER_GEAR_RATIO = 1.0 / 2.0;
     }
 
     public static class VisionConstants {
@@ -96,6 +97,12 @@ public final class Constants {
 
         public static final double FIELD_WIDTH = 16.541;
         public static final double FIELD_HEIGHT = 8.069;
+
+        public static final Transform3d groundToRobotTopPlate = new Transform3d(
+                Units.inchesToMeters(0),
+                Units.inchesToMeters(0),
+                Units.inchesToMeters(1.77) + TunerConstants.FrontLeft.WheelRadius,
+                new Rotation3d()); // TODO: Change Z Offset for Mk5n
 
         // Name of PhotonVision Camera
         public static final String RightRearCam = "Camera4";

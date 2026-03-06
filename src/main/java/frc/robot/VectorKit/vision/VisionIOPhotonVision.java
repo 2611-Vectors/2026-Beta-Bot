@@ -41,8 +41,9 @@ public class VisionIOPhotonVision implements VisionIO {
     public VisionIOPhotonVision(String name, Transform3d robotToCamera) {
         camera = new PhotonCamera(name);
         this.robotToCamera = robotToCamera;
-        Logger.recordOutput("/Vision/Transforms/Robot", new Transform3d());
-        Logger.recordOutput(String.format("/Vision/Transforms/robotToCamera-%s", name), robotToCamera);
+        Logger.recordOutput("Vision/Transforms/Robot", new Pose3d());
+        Logger.recordOutput(
+                String.format("Vision/Transforms/robotToCamera-%s", name), new Pose3d().transformBy(robotToCamera));
     }
 
     @Override

@@ -1,0 +1,20 @@
+{
+    "name": "Beta Bot",
+    "rotations": [
+        {
+            "axis": "x",
+            "degrees": 90
+        },
+        {
+            "axis": "z",
+            "degrees": 180
+        }
+    ],
+    "position": [
+        0,
+        0.9925,
+        0
+    ],
+    "cameras": [],
+    "components": []
+}

@@ -1,5 +1,6 @@
 package frc.robot.VectorKit.hardware;
 
+import static edu.wpi.first.units.Units.RPM;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import static edu.wpi.first.units.Units.Volts;
 
@@ -63,6 +64,10 @@ public class KrakenX60 extends TalonFX {
 
         m_simState.get().setRawRotorPosition(m_sim.getAngularPosition());
         m_simState.get().setRotorVelocity(m_sim.getAngularVelocity());
+    }
+
+    public double getRPM() {
+        return RPM.convertFrom(super.getVelocity().getValueAsDouble(), RotationsPerSecond);
     }
 
     public void setVelocity(double vel, AngularVelocityUnit unit) {

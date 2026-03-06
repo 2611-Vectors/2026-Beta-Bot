@@ -30,7 +30,7 @@ public class Transition extends SubsystemBase {
     public Transition() {
         upperLeftMotor.setFollower(upperRightMotor, MotorAlignmentValue.Opposed);
         upperLeftMotor.setInverted(InvertedValue.CounterClockwise_Positive);
-        lowerMotor.setInverted(InvertedValue.CounterClockwise_Positive);
+        lowerMotor.setInverted(InvertedValue.Clockwise_Positive);
     }
 
     public Command setUpperTransitioVoltage(Supplier<Double> voltage) {
@@ -67,7 +67,7 @@ public class Transition extends SubsystemBase {
 
     public Command setLowerTransitionRPM(Supplier<Double> rpm) {
         return run(() -> {
-                    lowerMotor.setVelocity(rpm.get(), RPM);
+                    lowerMotor.setVelocity(rpm.get() / TransitionConstants.LOWER_GEAR_RATIO, RPM);
                 })
                 .handleInterrupt(() -> {
                     lowerMotor.setVoltage(0.0);
@@ -92,7 +92,7 @@ public class Transition extends SubsystemBase {
 
     public Command setTransitionRPM(Supplier<Double> upperRPM, Supplier<Double> lowerRPM) {
         return run(() -> {
-                    lowerMotor.setVelocity(lowerRPM.get(), RPM);
+                    lowerMotor.setVelocity(lowerRPM.get() / TransitionConstants.LOWER_GEAR_RATIO, RPM);
                     upperLeftMotor.setVelocity(upperRPM.get() / TransitionConstants.UPPER_GEAR_RATIO, RPM);
                 })
                 .handleInterrupt(() -> {
@@ -115,17 +115,21 @@ public class Transition extends SubsystemBase {
         if (lowerTransitionPidTuner.updated()) lowerMotor.updateFromTuner(lowerTransitionPidTuner);
         if (upperTransitionPidTuner.updated()) upperLeftMotor.updateFromTuner(upperTransitionPidTuner);
 
-        Logger.recordOutput(
-                "/Transition/Lower/Current RPM", lowerMotor.getVelocity().getValueAsDouble() * 60);
-        Logger.recordOutput(
-                "/Transition/Upper/Current Left RPM",
-                upperLeftMotor.getVelocity().getValueAsDouble() * 60);
-        Logger.recordOutput(
-                "/Transition/Upper/Current Right RPM",
-                upperRightMotor.getVelocity().getValueAsDouble() * 60);
+        Logger.recordOutput("Transition/Lower/Current RPM (Motor)", lowerMotor.getRPM());
+        Logger.recordOutput("Transition/Upper/Current Left RPM (Motor)", upperLeftMotor.getRPM());
+        Logger.recordOutput("Transition/Upper/Current Right RPM (Motor)", upperRightMotor.getRPM());
 
-        upperLeftMotor.logCurrents("/Transition/Upper/Left");
-        upperRightMotor.logCurrents("/Transition/Upper/Right");
-        lowerMotor.logCurrents("/Transition/Lower");
+        Logger.recordOutput(
+                "Transition/Lower/Current RPM (Output)", lowerMotor.getRPM() / TransitionConstants.LOWER_GEAR_RATIO);
+        Logger.recordOutput(
+                "Transition/Upper/Current Left RPM (Output)",
+                upperLeftMotor.getRPM() / TransitionConstants.UPPER_GEAR_RATIO);
+        Logger.recordOutput(
+                "Transition/Upper/Current Right RPM (Output)",
+                upperRightMotor.getRPM() / TransitionConstants.UPPER_GEAR_RATIO);
+
+        upperLeftMotor.logCurrents("Transition/Upper/Left");
+        upperRightMotor.logCurrents("Transition/Upper/Right");
+        lowerMotor.logCurrents("Transition/Lower");
     }
 }
