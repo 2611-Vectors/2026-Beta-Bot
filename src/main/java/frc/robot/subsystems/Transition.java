@@ -75,7 +75,7 @@ public class Transition extends SubsystemBase {
     }
 
     public Command manualLowerTransitionRPM(Supplier<Boolean> reverse) {
-        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 1000.0);
+        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 500.0);
         return setLowerTransitionRPM(() -> (reverse.get() ? -rpm.get() : rpm.get()));
     }
 
@@ -102,7 +102,7 @@ public class Transition extends SubsystemBase {
     }
 
     public Command manualTransitionRPM(Supplier<Boolean> reverse) {
-        LoggedNetworkNumber lowerRPM = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 3000.0);
+        LoggedNetworkNumber lowerRPM = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 500.0);
         LoggedNetworkNumber upperRPM = new LoggedNetworkNumber("/Transition/Upper/Target RPM", 1000.0);
         return setTransitionRPM(
                 () -> (reverse.get() ? -upperRPM.get() : upperRPM.get()),
@@ -120,7 +120,7 @@ public class Transition extends SubsystemBase {
         Logger.recordOutput("Transition/Upper/Current Right RPM (Motor)", upperRightMotor.getRPM());
 
         Logger.recordOutput(
-                "Transition/Lower/Current RPM (Output)", lowerMotor.getRPM() / TransitionConstants.LOWER_GEAR_RATIO);
+                "Transition/Lower/Current RPM (Output)", lowerMotor.getRPM() * TransitionConstants.LOWER_GEAR_RATIO);
         Logger.recordOutput(
                 "Transition/Upper/Current Left RPM (Output)",
                 upperLeftMotor.getRPM() / TransitionConstants.UPPER_GEAR_RATIO);

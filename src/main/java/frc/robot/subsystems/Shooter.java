@@ -44,9 +44,11 @@ public class Shooter extends SubsystemBase {
 
                     manualRPM.set(rpmActual);
                     leftMotor.setVelocity(rpmActual, RPM);
+                    Logger.recordOutput("Shooter/On", true);
                 })
                 .handleInterrupt(() -> {
                     leftMotor.set(0.0);
+                    Logger.recordOutput("Shooter/Off", false);
                 });
     }
 

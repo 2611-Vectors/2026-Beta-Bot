@@ -109,7 +109,7 @@ public class Intake extends SubsystemBase {
         Logger.recordOutput(
                 "Intake/Pivot/Current RPM (Output)", pivotMotor.getRPM() / IntakeConstants.PIVOT_GEAR_RATIO);
         Logger.recordOutput("Intake/Current RPM (Motor)", intakeMotor.getRPM());
-        Logger.recordOutput("Intake/Current RPM (Output)", intakeMotor.getRPM() / IntakeConstants.INTAKE_GEAR_RATIO);
+        Logger.recordOutput("Intake/Current RPM (Output)", intakeMotor.getRPM() * IntakeConstants.INTAKE_GEAR_RATIO);
 
         intakeMotor.logCurrents("Intake");
         pivotMotor.logCurrents("Intake/Pivot");
