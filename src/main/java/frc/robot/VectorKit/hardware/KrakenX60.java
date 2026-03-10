@@ -17,9 +17,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.VectorKit.logging.VecLogger;
 import frc.robot.VectorKit.tuners.PidTuner;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 
 public class KrakenX60 extends SubsystemBase {
     private final Slot0Configs slot0Configs = new Slot0Configs();
@@ -54,17 +54,17 @@ public class KrakenX60 extends SubsystemBase {
     @Override
     public void periodic() {
         if (currentLogDir != "") {
-            Logger.recordOutput(
+            VecLogger.logData(
                     String.format("%s/StatorCurrent", currentLogDir),
                     kMotor.getStatorCurrent().getValueAsDouble());
-            Logger.recordOutput(
+            VecLogger.logData(
                     String.format("%s/SupplyCurrent", currentLogDir),
                     kMotor.getSupplyCurrent().getValueAsDouble());
         }
 
         if (rpmLogDir != "") {
-            Logger.recordOutput(String.format("%s/Current RPM", rpmLogDir), getVelocity(RPM));
-            Logger.recordOutput(String.format("%s/Target RPM", rpmLogDir), getTargetVelocity(RPM));
+            VecLogger.logData(String.format("%s/Current RPM", rpmLogDir), getVelocity(RPM));
+            VecLogger.logData(String.format("%s/Target RPM", rpmLogDir), getTargetVelocity(RPM));
         }
 
         if (kPidTuner != null) {
