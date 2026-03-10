@@ -3,12 +3,12 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 3.5,
+        "x": 4.4,
         "y": 0.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 4.5,
+        "x": 5.4,
         "y": 0.65
       },
       "isLocked": false,
@@ -73,7 +73,7 @@
   "eventMarkers": [
     {
       "name": "intakeOut",
-      "waypointRelativePos": 0.2,
+      "waypointRelativePos": 0.10918114143920277,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -84,7 +84,7 @@
     },
     {
       "name": "runIntake",
-      "waypointRelativePos": 1.3,
+      "waypointRelativePos": 1.2605459057071975,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",

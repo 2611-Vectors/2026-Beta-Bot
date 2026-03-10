@@ -18,7 +18,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
 import frc.robot.VectorKit.vision.Vision;
@@ -26,6 +25,7 @@ import frc.robot.VectorKit.vision.VisionIOPhotonVision;
 import frc.robot.VectorKit.vision.VisionIOPhotonVisionSim;
 import frc.robot.commands.AutoTarget;
 import frc.robot.commands.AutoTargetDriverControl;
+import frc.robot.commands.AutoTargetExperimental;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathfindToStart;
 import frc.robot.generated.TunerConstants;
@@ -56,6 +56,8 @@ public class RobotContainer {
     private final Transition m_Transition;
     private final FullSend m_FullSend;
     private final Hood m_Hood;
+
+    @SuppressWarnings("unused")
     private final Vision m_Vision;
 
     // Controller
@@ -130,6 +132,9 @@ public class RobotContainer {
 
         NamedCommands.registerCommand(
                 "autoTarget", new AutoTarget(m_Drive, m_Shooter, m_Intake, m_FullSend, m_Transition));
+        NamedCommands.registerCommand(
+                "autoTargetExperimental",
+                new AutoTargetExperimental(m_Drive, m_Shooter, m_Intake, m_FullSend, m_Transition));
         NamedCommands.registerCommand("runIntake", m_Intake.setIntakeRPM(() -> 2000.0));
         NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
         NamedCommands.registerCommand("runTransition", m_Transition.setTransitionRPM(() -> 0.0, () -> 1000.0));
@@ -141,15 +146,18 @@ public class RobotContainer {
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
         // Set up SysId routines
-        autoChooser.addOption(
-                "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_Drive));
-        autoChooser.addOption("Drive Simple FF Characterization", DriveCommands.feedforwardCharacterization(m_Drive));
-        autoChooser.addOption(
-                "Drive SysId (Quasistatic Forward)", m_Drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        autoChooser.addOption(
-                "Drive SysId (Quasistatic Reverse)", m_Drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        autoChooser.addOption("Drive SysId (Dynamic Forward)", m_Drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        autoChooser.addOption("Drive SysId (Dynamic Reverse)", m_Drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        // autoChooser.addOption(
+        //         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_Drive));
+        // autoChooser.addOption("Drive Simple FF Characterization",
+        // DriveCommands.feedforwardCharacterization(m_Drive));
+        // autoChooser.addOption(
+        //         "Drive SysId (Quasistatic Forward)", m_Drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
+        // autoChooser.addOption(
+        //         "Drive SysId (Quasistatic Reverse)", m_Drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
+        // autoChooser.addOption("Drive SysId (Dynamic Forward)",
+        // m_Drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
+        // autoChooser.addOption("Drive SysId (Dynamic Reverse)",
+        // m_Drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         // Configure the button bindings
         configureButtonBindings();
