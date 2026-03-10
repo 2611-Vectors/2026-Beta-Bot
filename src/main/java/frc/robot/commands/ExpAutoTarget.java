@@ -25,9 +25,9 @@ import org.littletonrobotics.junction.Logger;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AutoTarget extends SequentialCommandGroup {
+public class ExpAutoTarget extends SequentialCommandGroup {
     /** Creates a new AutoShooterDistance. */
-    public AutoTarget(Drive m_Drive, Shooter m_Shooter, Intake m_Intake, Transition m_Transition) {
+    public ExpAutoTarget(Drive m_Drive, Shooter m_Shooter, Intake m_Intake, Transition m_Transition) {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
 
@@ -60,7 +60,7 @@ public class AutoTarget extends SequentialCommandGroup {
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
                         DriveCommands.joystickDriveAtAngle(m_Drive, () -> 0.0, () -> 0.0, () -> targetAngle.get()),
                         m_Shooter.setFullSendRPM(() -> 5000.0),
-                        m_Transition.setTransitionRPM(() -> 750.0, () -> 500.0),
+                        m_Transition.setTransitionRPM(() -> 750.0, () -> 1000.0),
                         m_Intake.setIntakeRPM(() -> 500.0)));
     }
 

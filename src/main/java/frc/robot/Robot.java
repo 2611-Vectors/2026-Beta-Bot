@@ -45,6 +45,7 @@ public class Robot extends LoggedRobot {
         switch (Constants.currentMode) {
             case REAL:
                 // Running on a real robot, log to a USB stick ("/U/logs")
+                /* TODO: Add a string to WPILogWriter to change default directory (Save to SD Card and unload after each match; Also make an optimized logger) */
                 Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
                 break;

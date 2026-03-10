@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.AutoConstants;
-import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
@@ -29,11 +28,7 @@ import org.littletonrobotics.junction.Logger;
 public class AutoTargetDriverControl extends SequentialCommandGroup {
     /** Creates a new AutoShooterDistance. */
     public AutoTargetDriverControl(
-            Drive m_Drive,
-            Shooter m_Shooter,
-            FullSend m_FullSend,
-            Transition m_Transition,
-            CommandXboxController m_DriverController) {
+            Drive m_Drive, Shooter m_Shooter, Transition m_Transition, CommandXboxController m_DriverController) {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
 

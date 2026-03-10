@@ -58,7 +58,8 @@ public final class Constants {
         public static final double LAUNCH_ANGLE = 0.93;
         public static final double LAUNCH_ANGLE_COS = 2 * Math.pow(Math.cos(LAUNCH_ANGLE), 2);
 
-        public static final double MAXIMUM_RPM = 4500.0;
+        public static final double MAXIMUM_RPM = 5800.0;
+        public static final double MANUAL_RPM = 3050.0;
     }
 
     public static class FullSendConstants {
