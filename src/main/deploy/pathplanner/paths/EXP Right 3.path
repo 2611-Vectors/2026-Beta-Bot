@@ -40,7 +40,7 @@
         "y": 3.5
       },
       "nextControl": {
-        "x": 7.7,
+        "x": 9.0,
         "y": 3.5
       },
       "isLocked": false,
@@ -57,7 +57,7 @@
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "End Refuel 2"
     }
   ],
   "rotationTargets": [
@@ -66,12 +66,12 @@
       "rotationDegrees": 90.0
     },
     {
-      "waypointRelativePos": 2.0,
-      "rotationDegrees": 0.0
+      "waypointRelativePos": 2.1,
+      "rotationDegrees": -20.0
     },
     {
-      "waypointRelativePos": 2.6,
-      "rotationDegrees": -90.0
+      "waypointRelativePos": 2.65,
+      "rotationDegrees": -119.99999999999999
     }
   ],
   "constraintZones": [],
@@ -79,7 +79,7 @@
   "eventMarkers": [
     {
       "name": "runIntake",
-      "waypointRelativePos": 0.0,
+      "waypointRelativePos": 0.8,
       "endWaypointRelativePos": null,
       "command": {
         "type": "named",
@@ -103,13 +103,13 @@
   "globalConstraints": {
     "maxVelocity": 3.0,
     "maxAcceleration": 2.5,
-    "maxAngularVelocity": 360.0,
-    "maxAngularAcceleration": 180.0,
+    "maxAngularVelocity": 720.0,
+    "maxAngularAcceleration": 360.0,
     "nominalVoltage": 12.0,
     "unlimited": false
   },
   "goalEndState": {
-    "velocity": 0,
+    "velocity": 3.0,
     "rotation": 180.0
   },
   "reversed": false,

@@ -46,6 +46,18 @@
           "data": {
             "pathName": "EXP Right 3"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "EXP Right 4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "autoTarget"
+          }
         }
       ]
     }

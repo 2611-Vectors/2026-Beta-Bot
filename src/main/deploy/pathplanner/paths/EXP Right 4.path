@@ -3,48 +3,53 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 8.4,
-        "y": 3.6
+        "x": 5.8,
+        "y": 0.65
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.882361909794959,
-        "y": 1.6681483474218646
+        "x": 4.8,
+        "y": 0.6500000000000001
       },
       "isLocked": false,
-      "linkedName": "End Refuel 1"
+      "linkedName": "End Refuel 2"
     },
     {
       "anchor": {
-        "x": 5.5,
-        "y": 0.655
+        "x": 3.75,
+        "y": 0.65
       },
       "prevControl": {
-        "x": 6.5,
-        "y": 0.6549999999999999
+        "x": 4.75,
+        "y": 0.6499999999999999
       },
       "nextControl": {
-        "x": 4.5,
-        "y": 0.6550000000000001
+        "x": 3.5,
+        "y": 0.65
       },
       "isLocked": false,
       "linkedName": null
     },
     {
       "anchor": {
-        "x": 3.5,
-        "y": 0.65
+        "x": 2.7,
+        "y": 1.5
       },
       "prevControl": {
-        "x": 4.5,
-        "y": 0.6499999999999999
+        "x": 2.7,
+        "y": 1.0000000000000002
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.85,
+      "rotationDegrees": 180.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -58,13 +63,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": 65.0
   },
   "reversed": false,
   "folder": "Right",
   "idealStartingState": {
-    "velocity": 0,
-    "rotation": 90.0
+    "velocity": 3.0,
+    "rotation": 180.0
   },
   "useDefaultConstraints": true
 }
