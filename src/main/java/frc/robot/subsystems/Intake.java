@@ -17,7 +17,6 @@ import frc.robot.VectorKit.tuners.PidTuner;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
-import org.littletonrobotics.junction.networktables.NT4Publisher;;
 
 public class Intake extends SubsystemBase {
     /** Creates a new Intake. */
