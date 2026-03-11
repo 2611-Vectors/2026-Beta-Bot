@@ -51,8 +51,8 @@ public class Transition extends SubsystemBase {
 
     public Command setTransitionRPM(Supplier<Double> upperRPM, Supplier<Double> lowerRPM) {
         return new ParallelCommandGroup(
-                lowerMotor.setVelocity(() -> (lowerRPM.get() / TransitionConstants.LOWER_GEAR_RATIO), RPM),
-                upperLeftMotor.setVelocity(() -> (upperRPM.get() / TransitionConstants.UPPER_GEAR_RATIO), RPM));
+                lowerMotor.setVelocity(() -> (lowerRPM.get() / TransitionConstants.LOWER_GEAR_RATIO), () -> RPM),
+                upperLeftMotor.setVelocity(() -> (upperRPM.get() / TransitionConstants.UPPER_GEAR_RATIO), () -> RPM));
     }
 
     public Command manualTransitionRPM(Supplier<Boolean> reverse) {

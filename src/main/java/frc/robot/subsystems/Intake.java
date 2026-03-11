@@ -71,7 +71,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command setIntakeRPM(Supplier<Double> rpm) {
-        return intakeMotor.setVelocity(() -> (rpm.get() / IntakeConstants.INTAKE_GEAR_RATIO), RPM);
+        return intakeMotor.setVelocity(() -> (rpm.get() / IntakeConstants.INTAKE_GEAR_RATIO), () -> RPM);
     }
 
     public Command dumbIntakeOut() {

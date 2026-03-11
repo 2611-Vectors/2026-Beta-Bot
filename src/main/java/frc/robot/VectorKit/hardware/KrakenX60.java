@@ -37,6 +37,7 @@ public class KrakenX60 extends SubsystemBase {
     public KrakenX60(int ID) {
         kMotor = new TalonFX(ID);
         kConfig = kMotor.getConfigurator();
+        kVelocityControl.withVelocity(0);
     }
 
     public void enableCurrentLogging(String basePath) {
@@ -108,13 +109,16 @@ public class KrakenX60 extends SubsystemBase {
         return kMotor.getPosition().getValueAsDouble();
     }
 
-    private void setVelocity(double vel, AngularVelocityUnit unit) {
-        kMotor.feed();
-        kMotor.setControl(kVelocityControl.withVelocity(RotationsPerSecond.convertFrom(vel, unit)));
-    }
-
-    public Command setVelocity(Supplier<Double> vel, AngularVelocityUnit unit) {
-        return run(() -> setVelocity(vel.get(), unit)).handleInterrupt(() -> kMotor.setVoltage(0.0));
+    public Command setVelocity(Supplier<Double> vel, Supplier<AngularVelocityUnit> unit) {
+        return run(() -> {
+                    kMotor.feed();
+                    kVelocityControl.withVelocity(RotationsPerSecond.convertFrom(vel.get(), unit.get()));
+                    kMotor.setControl(kVelocityControl);
+                })
+                .handleInterrupt(() -> {
+                    kMotor.setVoltage(0.0);
+                    kVelocityControl.withVelocity(0.0);
+                });
     }
 
     public Command setVoltage(Supplier<Double> volts) {

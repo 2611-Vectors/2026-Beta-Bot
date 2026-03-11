@@ -58,21 +58,21 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command setFullSendRPM(Supplier<Double> rpm) {
-        return fullSendMotor.setVelocity(rpm, RPM);
+        return fullSendMotor.setVelocity(rpm, () -> RPM);
     }
 
     public Command manualFullSendRPM(Supplier<Boolean> reverse) {
-        LoggedNetworkNumber rpm = new LoggedNetworkNumber("FullSend/Target RPM", 5000.0);
+        LoggedNetworkNumber rpm = new LoggedNetworkNumber("FullSend/Manual Target RPM", 5000.0);
         return setFullSendRPM(() -> (reverse.get() ? -rpm.get() : rpm.get()));
     }
 
     public Command setShooterRPM(Supplier<Double> rpm) {
-        return leftMotor.setVelocity(rpm, RPM);
+        return leftMotor.setVelocity(rpm, () -> RPM);
     }
 
     public Command manualShooterRPM() {
-        LoggedNetworkNumber manualRPM = new LoggedNetworkNumber("Shooter/Target RPM", ShooterConstants.MANUAL_RPM);
-        return leftMotor.setVelocity(() -> manualRPM.get(), RPM);
+        LoggedNetworkNumber rpm = new LoggedNetworkNumber("Shooter/Manual Target RPM", ShooterConstants.MANUAL_RPM);
+        return leftMotor.setVelocity(() -> rpm.get(), () -> RPM);
     }
 
     public Boolean isAtSpeed() {
@@ -84,14 +84,15 @@ public class Shooter extends SubsystemBase {
     }
 
     public Command manualHoodPos() {
-        LoggedNetworkNumber pos = new LoggedNetworkNumber("Shooter/Hood Position", 0.65);
+        LoggedNetworkNumber pos = new LoggedNetworkNumber("Shooter/Manual Hood Position", 0.65);
         return leftLinearActuator.setHoodPos(() -> pos.get());
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        Logger.recordOutput("Shooter/On", leftMotor.getTargetVelocity(RPM) > 0);
-        Logger.recordOutput("Shooter/Manual Mode", leftMotor.getTargetVelocity(RPM) == ShooterConstants.MANUAL_RPM);
+        Logger.recordOutput("Shooter/On", leftMotor.getTargetVelocity(RPM) > 0.0);
+        Logger.recordOutput(
+                "Shooter/Manual Mode", Math.abs(leftMotor.getTargetVelocity(RPM) - ShooterConstants.MANUAL_RPM) < 1.0);
     }
 }
