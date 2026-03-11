@@ -7,17 +7,14 @@
 
 package frc.robot;
 
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.VisionConstants;
@@ -28,7 +25,6 @@ import frc.robot.commands.AutoTarget;
 import frc.robot.commands.AutoTargetDriverControl;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.ExpAutoTarget;
-import frc.robot.commands.PathfindToStart;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -39,7 +35,6 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
-import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
     // Subsystems
@@ -58,7 +53,7 @@ public class RobotContainer {
             new CommandXboxController(ControllerConstants.OPERATOR_CONTROLLER_ID);
 
     // Dashboard inputs
-    private final LoggedDashboardChooser<Command> autoChooser;
+    // private final LoggedDashboardChooser<Command> autoChooser;
     public static PathPlannerAuto auto = null;
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
@@ -130,7 +125,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("resetHood", m_Shooter.setHoodPos(() -> 0.65));
 
         // Set up auto routines
-        autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
+        // autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
         // SysIdHelper.addSysIdRoutines(autoChooser, m_Drive);
 
         // Configure the button bindings
@@ -139,7 +134,7 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
         // new Trigger(() -> Drive);
-        new Trigger(() -> DriverStation.isTeleopEnabled()).whileTrue(m_Shooter.manualHoodPos());
+        // new Trigger(() -> DriverStation.isTeleopEnabled()).whileTrue(m_Shooter.manualHoodPos());
 
         // Default command, normal field-relative drive
         m_Drive.setDefaultCommand(DriveCommands.joystickDrive(
@@ -196,11 +191,12 @@ public class RobotContainer {
                 .toggleOnTrue(new AutoTargetDriverControl(m_Drive, m_Shooter, m_Transition, m_DriverController));
 
         // Fold intake out
-        m_OperatorController.a().whileTrue(m_Intake.dumbIntakeOut());
+        // m_OperatorController.a().whileTrue(m_Intake.dumbIntakeOut());
     }
 
     public Command getAutonomousCommand() {
-        auto = new PathPlannerAuto(autoChooser.get().getName());
-        return new PathfindToStart(auto);
+        // auto = new PathPlannerAuto(autoChooser.get().getName());
+        // return new PathfindToStart(auto);
+        return Commands.runOnce(() -> {});
     }
 }

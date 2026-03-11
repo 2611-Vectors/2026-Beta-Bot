@@ -46,7 +46,7 @@ public class Robot extends LoggedRobot {
             case REAL:
                 // Running on a real robot
                 // FIXME: Disabled USB logging due to frequent crashes
-                // Logger.addDataReceiver(new WPILOGWriter());
+                Logger.addDataReceiver(new WPILOGWriter());
                 Logger.addDataReceiver(new NT4Publisher());
                 break;
 

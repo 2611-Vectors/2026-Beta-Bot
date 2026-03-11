@@ -17,9 +17,9 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.units.AngularVelocityUnit;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.VectorKit.logging.VecLogger;
 import frc.robot.VectorKit.tuners.PidTuner;
 import java.util.function.Supplier;
+import org.littletonrobotics.junction.Logger;
 
 public class KrakenX60 extends SubsystemBase {
     private final Slot0Configs slot0Configs = new Slot0Configs();
@@ -50,30 +50,39 @@ public class KrakenX60 extends SubsystemBase {
 
     public void attachTuner(PidTuner tuner) {
         kPidTuner = tuner;
+        slot0Configs
+                .withKP(tuner.getP())
+                .withKI(tuner.getI())
+                .withKD(tuner.getD())
+                .withKS(tuner.getS())
+                .withKV(tuner.getV());
+
+        kConfig.apply(slot0Configs);
     }
 
     @Override
     public void periodic() {
         if (currentLogDir != "") {
-            VecLogger.logData(
+            Logger.recordOutput(
                     String.format("%s/StatorCurrent", currentLogDir),
                     kMotor.getStatorCurrent().getValueAsDouble());
-            VecLogger.logData(
+            Logger.recordOutput(
                     String.format("%s/SupplyCurrent", currentLogDir),
                     kMotor.getSupplyCurrent().getValueAsDouble());
         }
 
         if (rpmLogDir != "") {
-            VecLogger.logData(String.format("%s/Current RPM", rpmLogDir), getVelocity(RPM));
-            VecLogger.logData(String.format("%s/Target RPM", rpmLogDir), getTargetVelocity(RPM));
+            Logger.recordOutput(String.format("%s/Current RPM", rpmLogDir), getVelocity(RPM));
+            Logger.recordOutput(String.format("%s/Target RPM", rpmLogDir), getTargetVelocity(RPM));
         }
 
         if (kPidTuner != null) {
-            slot0Configs.kP = kPidTuner.getP();
-            slot0Configs.kI = kPidTuner.getI();
-            slot0Configs.kD = kPidTuner.getD();
-            slot0Configs.kV = kPidTuner.getV();
-            slot0Configs.kS = kPidTuner.getS();
+            slot0Configs
+                    .withKP(kPidTuner.getP())
+                    .withKI(kPidTuner.getI())
+                    .withKD(kPidTuner.getD())
+                    .withKS(kPidTuner.getS())
+                    .withKV(kPidTuner.getV());
 
             if (kPidTuner.updated()) kConfig.apply(slot0Configs);
         }
@@ -111,7 +120,7 @@ public class KrakenX60 extends SubsystemBase {
 
     public Command setVelocity(Supplier<Double> vel, Supplier<AngularVelocityUnit> unit) {
         return run(() -> {
-                    kMotor.feed();
+                    // kMotor.feed();
                     kVelocityControl.withVelocity(RotationsPerSecond.convertFrom(vel.get(), unit.get()));
                     kMotor.setControl(kVelocityControl);
                 })
