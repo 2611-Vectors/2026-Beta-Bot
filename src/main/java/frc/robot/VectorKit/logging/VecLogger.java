@@ -4,24 +4,54 @@
 
 package frc.robot.VectorKit.logging;
 
-import edu.wpi.first.networktables.GenericPublisher;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.util.datalog.DataLog;
+import edu.wpi.first.wpilibj.DataLogManager;
+import edu.wpi.first.wpilibj.DriverStation;
 import java.util.HashMap;
 import java.util.Map;
 
 /** Add your docs here. */
 public class VecLogger {
     private static final NetworkTableInstance nt4 = NetworkTableInstance.getDefault();
-    private static final NetworkTable VecTable = nt4.getTable("VectorKit");
-    private static final Map<String, GenericPublisher> publishers = new HashMap<>();
+    public static final NetworkTable VecTable = nt4.getTable("VectorKit");
+    public static final DataLog VecDataLog = DataLogManager.getLog();
+    private static final Map<String, Loggable> publishers = new HashMap<>();
+    private static final Map<String, Boolean> usbLogging = new HashMap<>();
 
-    public static void logData(String key, double value) {
-        //     if
-        // (!VecTable.getTopic(key).getType().getValueStr().contentEquals(NetworkTableType.getStringFromObject(value)))
-        //         return;
-        //     if (!publishers.containsKey(key))
-        //         publishers.put(key, VecTable.getDoubleTopic(key).publish());
-        //     publishers.get(key).
+    public static void startUsbLogger() {
+        DataLogManager.start();
+        DataLogManager.logConsoleOutput(true);
+        DataLogManager.logNetworkTables(false);
+        DriverStation.startDataLog(VecDataLog);
+    }
+
+    public static void logData(String key, Object value, Boolean logToUSB) {
+        if (!publishers.containsKey(key)) {
+            publishers.put(key, new Loggable(key, value));
+            usbLogging.put(key, logToUSB);
+        } else {
+            publishers.get(key).set(value);
+            usbLogging.put(key, logToUSB);
+        }
+
+        if (usbLogging.get(key)) publishers.get(key).logUSB();
+    }
+
+    public static void logData(String key, Object value) {
+        if (!publishers.containsKey(key)) {
+            publishers.put(key, new Loggable(key, value));
+            usbLogging.put(key, false);
+        } else publishers.get(key).set(value);
+        if (usbLogging.get(key)) publishers.get(key).logUSB();
+    }
+
+    public static void enableUsbLogging(String key) {
+        usbLogging.put(key, true);
+    }
+
+    public static void disableUsbLogging(String key) {
+        usbLogging.put(key, false);
     }
 }
