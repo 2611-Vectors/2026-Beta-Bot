@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
@@ -31,6 +32,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
@@ -52,9 +54,12 @@ public class RobotContainer {
     private final Drive m_Drive;
     private final Shooter m_Shooter;
     private final Intake m_Intake;
+    private final Pivot m_Pivot;
     private final Transition m_Transition;
     private final FullSend m_FullSend;
     private final Hood m_Hood;
+
+    @SuppressWarnings("unused")
     private final Vision m_Vision;
 
     // Controller
@@ -71,6 +76,7 @@ public class RobotContainer {
         m_Shooter = new Shooter();
         m_Transition = new Transition();
         m_Intake = new Intake();
+        m_Pivot = new Pivot();
         m_FullSend = new FullSend();
         m_Hood = new Hood();
 
@@ -133,7 +139,7 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
         NamedCommands.registerCommand("runTransition", m_Transition.setTransitionRPM(() -> 0.0, () -> 1000.0));
         NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
-        NamedCommands.registerCommand("intakeOut", m_Intake.dumbIntakeOut());
+        NamedCommands.registerCommand("intakeOut", m_Pivot.dumbIntakeOut());
         NamedCommands.registerCommand("resetHood", m_Hood.setHoodPos(() -> 0.65));
 
         // Set up auto routines
@@ -215,7 +221,9 @@ public class RobotContainer {
                 .toggleOnTrue(
                         new AutoTargetDriverControl(m_Drive, m_Shooter, m_FullSend, m_Transition, m_DriverController));
 
-        m_OperatorController.a().whileTrue(m_Intake.dumbIntakeOut());
+        m_OperatorController
+                .a()
+                .whileTrue(new ParallelRaceGroup(m_Pivot.dumbIntakeOut(), m_Intake.setIntakeRPM(() -> 500.0)));
     }
 
     /**

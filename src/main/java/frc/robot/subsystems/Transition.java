@@ -31,6 +31,8 @@ public class Transition extends SubsystemBase {
         upperLeftMotor.setFollower(upperRightMotor, MotorAlignmentValue.Opposed);
         upperLeftMotor.setInverted(InvertedValue.CounterClockwise_Positive);
         lowerMotor.setInverted(InvertedValue.Clockwise_Positive);
+        upperLeftMotor.setStatorCurrentLimit(20);
+        lowerMotor.setStatorCurrentLimit(20);
     }
 
     public Command setUpperTransitioVoltage(Supplier<Double> voltage) {

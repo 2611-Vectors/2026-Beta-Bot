@@ -9,7 +9,6 @@ import static edu.wpi.first.units.Units.RotationsPerSecond;
 
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.MotorAlignmentValue;
-import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
@@ -27,14 +26,12 @@ public class Shooter extends SubsystemBase {
 
     PidTuner shooterPidTuner = new PidTuner("/Shooter/", 0.2, 0.02, 0.0, 0.0, 0.12);
 
-    // Max RPM / Seconds to max RPM
-    SlewRateLimiter RPMSlew = new SlewRateLimiter(6000.0 / 3.0);
-
     LoggedNetworkNumber manualRPM = new LoggedNetworkNumber("/Shooter/Target RPM", 2900.0);
 
     public Shooter() {
         leftMotor.setFollower(rightMotor, MotorAlignmentValue.Opposed);
         leftMotor.setInverted(InvertedValue.CounterClockwise_Positive);
+        leftMotor.setStatorCurrentLimit(80);
     }
 
     public Command setShooterRPM(Supplier<Double> rpm) {
@@ -48,7 +45,7 @@ public class Shooter extends SubsystemBase {
                 })
                 .handleInterrupt(() -> {
                     leftMotor.set(0.0);
-                    Logger.recordOutput("Shooter/Off", false);
+                    Logger.recordOutput("Shooter/On", false);
                 });
     }
 
@@ -62,9 +59,8 @@ public class Shooter extends SubsystemBase {
     }
 
     public Boolean isAtSpeed() {
-        boolean atSpeed =
-                RPM.convertFrom(leftMotor.getVelocity().getValueAsDouble(), RotationsPerSecond) >= manualRPM.get();
-        Logger.recordOutput("/Shooter/At Speed", atSpeed);
+        boolean atSpeed = (RPM.convertFrom(leftMotor.getVelocity().getValueAsDouble(), RotationsPerSecond) - 50.0)
+                >= manualRPM.get();
         return atSpeed;
     }
 
@@ -72,9 +68,12 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         if (shooterPidTuner.updated()) leftMotor.updateFromTuner(shooterPidTuner);
-        Logger.recordOutput("/Shooter/Current RPM", leftMotor.getVelocity().getValueAsDouble() * 60);
+        Logger.recordOutput("Shooter/Current RPM", leftMotor.getVelocity().getValueAsDouble() * 60);
 
-        leftMotor.logCurrents("/Shooter/Left");
+        Logger.recordOutput("Shooter/At Speed", isAtSpeed());
+        Logger.recordOutput("Shooter/Manual Mode", Math.abs(manualRPM.get() - 3050.0) <= 2);
+
+        leftMotor.logCurrents("Shooter/Left");
         rightMotor.logCurrents("Shooter/Right");
     }
 }

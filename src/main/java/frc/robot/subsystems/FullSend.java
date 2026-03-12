@@ -25,6 +25,7 @@ public class FullSend extends SubsystemBase {
 
     public FullSend() {
         fullSendMotor.setInverted(InvertedValue.Clockwise_Positive);
+        fullSendMotor.setStatorCurrentLimit(20);
     }
 
     public Command setFullSendVoltage(Supplier<Double> voltage) {
