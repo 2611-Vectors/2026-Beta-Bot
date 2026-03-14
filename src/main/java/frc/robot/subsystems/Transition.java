@@ -31,8 +31,8 @@ public class Transition extends SubsystemBase {
         upperLeftMotor.setFollower(upperRightMotor, MotorAlignmentValue.Opposed);
         upperLeftMotor.setInverted(InvertedValue.CounterClockwise_Positive);
         lowerMotor.setInverted(InvertedValue.Clockwise_Positive);
-        upperLeftMotor.setStatorCurrentLimit(20);
-        lowerMotor.setStatorCurrentLimit(20);
+        upperLeftMotor.setStatorCurrentLimit(10);
+        lowerMotor.setStatorCurrentLimit(60);
     }
 
     public Command setUpperTransitioVoltage(Supplier<Double> voltage) {
@@ -125,10 +125,10 @@ public class Transition extends SubsystemBase {
                 "Transition/Lower/Current RPM (Output)", lowerMotor.getRPM() * TransitionConstants.LOWER_GEAR_RATIO);
         Logger.recordOutput(
                 "Transition/Upper/Current Left RPM (Output)",
-                upperLeftMotor.getRPM() / TransitionConstants.UPPER_GEAR_RATIO);
+                upperLeftMotor.getRPM() * TransitionConstants.UPPER_GEAR_RATIO);
         Logger.recordOutput(
                 "Transition/Upper/Current Right RPM (Output)",
-                upperRightMotor.getRPM() / TransitionConstants.UPPER_GEAR_RATIO);
+                upperRightMotor.getRPM() * TransitionConstants.UPPER_GEAR_RATIO);
 
         upperLeftMotor.logCurrents("Transition/Upper/Left");
         upperRightMotor.logCurrents("Transition/Upper/Right");

@@ -25,7 +25,7 @@ public class Intake extends SubsystemBase {
 
     public Intake() {
         intakeMotor.setInverted(InvertedValue.Clockwise_Positive);
-        intakeMotor.setStatorCurrentLimit(20);
+        intakeMotor.setStatorCurrentLimit(50);
     }
 
     public Command setIntakeVoltage(Supplier<Double> voltage) {

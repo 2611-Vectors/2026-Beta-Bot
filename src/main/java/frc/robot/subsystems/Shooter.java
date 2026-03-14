@@ -22,13 +22,18 @@ public class Shooter extends SubsystemBase {
     /** Creates a new Shooter. */
     private final KrakenX60 leftMotor = new KrakenX60(ShooterConstants.LEFT_MOTOR_ID);
 
+    private final KrakenX60 leftMotor2 = new KrakenX60(ShooterConstants.LEFT_MOTOR2_ID);
     private final KrakenX60 rightMotor = new KrakenX60(ShooterConstants.RIGHT_MOTOR_ID);
+    private final KrakenX60 rightMotor2 = new KrakenX60(ShooterConstants.RIGHT_MOTOR2_ID);
 
     PidTuner shooterPidTuner = new PidTuner("/Shooter/", 0.2, 0.02, 0.0, 0.0, 0.12);
 
     LoggedNetworkNumber manualRPM = new LoggedNetworkNumber("/Shooter/Target RPM", 2900.0);
 
     public Shooter() {
+        leftMotor.setFollower(rightMotor2, MotorAlignmentValue.Opposed);
+        leftMotor.setFollower(leftMotor2, MotorAlignmentValue.Aligned);
+
         leftMotor.setFollower(rightMotor, MotorAlignmentValue.Opposed);
         leftMotor.setInverted(InvertedValue.CounterClockwise_Positive);
         leftMotor.setStatorCurrentLimit(80);
@@ -75,5 +80,7 @@ public class Shooter extends SubsystemBase {
 
         leftMotor.logCurrents("Shooter/Left");
         rightMotor.logCurrents("Shooter/Right");
+        leftMotor2.logCurrents("Shooter/Left2");
+        rightMotor2.logCurrents("Shooter/Right2");
     }
 }

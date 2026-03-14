@@ -42,8 +42,10 @@ public final class Constants {
     }
 
     public static class ShooterConstants {
-        public static final int LEFT_MOTOR_ID = 61;
-        public static final int RIGHT_MOTOR_ID = 62;
+        public static final int LEFT_MOTOR_ID = 41; // 61;
+        public static final int LEFT_MOTOR2_ID = 42;
+        public static final int RIGHT_MOTOR_ID = 43; // 62;
+        public static final int RIGHT_MOTOR2_ID = 44;
 
         public static final int LEFT_LINEAR_ACTUATOR_ID = 0;
         public static final int RIGHT_LINEAR_ACTUATOR_ID = 1;
@@ -81,8 +83,8 @@ public final class Constants {
     }
 
     public static class TransitionConstants {
-        public static final int UPPER_LEFT_MOTOR_ID = 41;
-        public static final int UPPER_RIGHT_MOTOR_ID = 42;
+        public static final int UPPER_LEFT_MOTOR_ID = 61; // 41;
+        public static final int UPPER_RIGHT_MOTOR_ID = 62; // 42;
         public static final int LOWER_MOTOR_ID = 52;
 
         public static final double UPPER_GEAR_RATIO = 1.0 / 3.0;
