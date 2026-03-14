@@ -13,13 +13,13 @@
         {
           "type": "path",
           "data": {
-            "pathName": "EXP Right 1"
+            "pathName": "EXP Left 1"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "EXP Right 2"
+            "pathName": "EXP Left 2"
           }
         },
         {
@@ -44,7 +44,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "EXP Right 3"
+            "pathName": "EXP Left 3"
           }
         },
         {

@@ -8,43 +8,32 @@
       },
       "prevControl": null,
       "nextControl": {
-        "x": 7.882361909794959,
-        "y": 1.2681483474218647
+        "x": 6.424773513966315,
+        "y": 2.8861842437495877
       },
       "isLocked": false,
       "linkedName": "End Refuel 1"
     },
     {
       "anchor": {
-        "x": 5.5,
-        "y": 0.655
+        "x": 3.33,
+        "y": 2.4
       },
       "prevControl": {
-        "x": 6.5,
-        "y": 0.6549999999999999
-      },
-      "nextControl": {
-        "x": 4.5,
-        "y": 0.6550000000000001
-      },
-      "isLocked": false,
-      "linkedName": null
-    },
-    {
-      "anchor": {
-        "x": 3.8,
-        "y": 0.65
-      },
-      "prevControl": {
-        "x": 4.8,
-        "y": 0.6499999999999999
+        "x": 4.323661214555094,
+        "y": 2.5124161495911297
       },
       "nextControl": null,
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "Start Shoot Right"
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 0.45,
+      "rotationDegrees": -135.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -58,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 90.0
+    "rotation": -135.0
   },
   "reversed": false,
   "folder": "Right",
