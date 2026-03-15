@@ -8,6 +8,7 @@ import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.MotorOutputConfigs;
 import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.controls.Follower;
+import com.ctre.phoenix6.controls.TorqueCurrentFOC;
 import com.ctre.phoenix6.controls.VelocityVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
@@ -34,6 +35,7 @@ public class KrakenX60 extends TalonFX {
     private final DCMotorSim m_sim;
 
     private final VelocityVoltage m_velocityControl = new VelocityVoltage(0).withSlot(0);
+    private final TorqueCurrentFOC m_focControl = new TorqueCurrentFOC(0);
 
     public KrakenX60(int ID) {
         super(ID);

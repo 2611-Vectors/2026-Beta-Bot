@@ -106,9 +106,6 @@ public final class Constants {
                 Units.inchesToMeters(1.938) + TunerConstants.FrontLeft.WheelRadius,
                 new Rotation3d());
 
-        public static final Transform3d centerToRobotBLCorner = new Transform3d(
-                Units.inchesToMeters(-13), Units.inchesToMeters(13), Units.inchesToMeters(0), new Rotation3d());
-
         public static final Transform3d centerToRobotBRCorner = new Transform3d(
                 Units.inchesToMeters(-13), Units.inchesToMeters(-13), Units.inchesToMeters(0), new Rotation3d());
 
@@ -117,8 +114,8 @@ public final class Constants {
 
         // Position of PhotonVision Camera
         public static final Transform3d robotToLeftRearCam = new Transform3d(
-                Units.inchesToMeters(14),
                 Units.inchesToMeters(-10.5),
+                Units.inchesToMeters(14),
                 Units.inchesToMeters(21),
                 new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(169.951)));
 
@@ -127,8 +124,8 @@ public final class Constants {
 
         // Position of PhotonVision Camera
         public static final Transform3d robotToLeftFrontCam = new Transform3d(
-                Units.inchesToMeters(13.75),
                 Units.inchesToMeters(-7.75),
+                Units.inchesToMeters(13.75),
                 Units.inchesToMeters(21),
                 new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(23.162)));
 
@@ -137,22 +134,20 @@ public final class Constants {
 
         // Position of PhotonVision Camera
         public static final Transform3d robotToRightRearCam = new Transform3d(
-                        Units.inchesToMeters(-11.12),
-                        Units.inchesToMeters(-10.41),
-                        Units.inchesToMeters(16.28),
-                        new Rotation3d(0.0, Math.toRadians(-8.2), Math.toRadians(169.951)))
-                .plus(centerToRobotBRCorner);
+                Units.inchesToMeters(1.3125 - 13),
+                Units.inchesToMeters(1 - 13),
+                Units.inchesToMeters(20.75),
+                new Rotation3d(0.0, Math.toRadians(-8.2), Math.toRadians(169.951)));
 
         // Name of PhotonVision Camera
         public static final String RightFrontCam = "Camera3";
 
         // Position of PhotonVision Camera
         public static final Transform3d robotToRightFrontCam = new Transform3d(
-                        Units.inchesToMeters(-7.58),
-                        Units.inchesToMeters(-10.81),
-                        Units.inchesToMeters(16.28),
-                        new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(-23.162)))
-                .plus(centerToRobotBRCorner);
+                Units.inchesToMeters(4.375 - 13),
+                Units.inchesToMeters(0.75 - 13),
+                Units.inchesToMeters(20.875),
+                new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(-23.162)));
 
         // Basic filtering thresholds
         public static final double MAX_AMBIGUITY = 0.2;
