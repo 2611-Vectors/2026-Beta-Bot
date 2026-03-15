@@ -137,7 +137,7 @@ public class RobotContainer {
                 "autoTarget", new AutoTarget(m_Drive, m_Shooter, m_Intake, m_FullSend, m_Transition));
         NamedCommands.registerCommand("runIntake", m_Intake.setIntakeRPM(() -> 2000.0));
         NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
-        NamedCommands.registerCommand("runTransition", m_Transition.setTransitionRPM(() -> 0.0, () -> 1000.0));
+        NamedCommands.registerCommand("runTransition", m_Transition.setLowerTransitionRPM(() -> 1000.0));
         NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
         NamedCommands.registerCommand("intakeOut", m_Pivot.dumbIntakeOut());
         NamedCommands.registerCommand("resetHood", m_Hood.setHoodPos(() -> 0.65));
@@ -207,12 +207,12 @@ public class RobotContainer {
         m_DriverController
                 .rightTrigger()
                 .whileTrue(new ParallelCommandGroup(
-                        m_FullSend.manualFullSendRPM(() -> false), m_Transition.manualTransitionRPM(() -> false)));
+                        m_FullSend.manualFullSendRPM(() -> false), m_Transition.manualLowerTransitionRPM(() -> false)));
 
         m_DriverController
                 .rightBumper()
                 .whileTrue(new ParallelCommandGroup(
-                        m_FullSend.manualFullSendRPM(() -> true), m_Transition.manualTransitionRPM(() -> true)));
+                        m_FullSend.manualFullSendRPM(() -> true), m_Transition.manualLowerTransitionRPM(() -> true)));
 
         // m_DriverController.leftTrigger().toggleOnTrue(m_Shooter.setShooterRPM(() -> 3050.0));
         m_DriverController.leftTrigger().toggleOnTrue(m_Shooter.manualShooterRPM());

@@ -106,6 +106,32 @@ public final class Constants {
                 Units.inchesToMeters(1.938) + TunerConstants.FrontLeft.WheelRadius,
                 new Rotation3d());
 
+        public static final Transform3d centerToRobotBLCorner = new Transform3d(
+                Units.inchesToMeters(-13), Units.inchesToMeters(13), Units.inchesToMeters(0), new Rotation3d());
+
+        public static final Transform3d centerToRobotBRCorner = new Transform3d(
+                Units.inchesToMeters(-13), Units.inchesToMeters(-13), Units.inchesToMeters(0), new Rotation3d());
+
+        // Name of PhotonVision Camera
+        public static final String LeftRearCam = "Camera6";
+
+        // Position of PhotonVision Camera
+        public static final Transform3d robotToLeftRearCam = new Transform3d(
+                Units.inchesToMeters(14),
+                Units.inchesToMeters(-10.5),
+                Units.inchesToMeters(21),
+                new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(169.951)));
+
+        // Name of PhotonVision Camera
+        public static final String LeftFrontCam = "Camera5";
+
+        // Position of PhotonVision Camera
+        public static final Transform3d robotToLeftFrontCam = new Transform3d(
+                Units.inchesToMeters(13.75),
+                Units.inchesToMeters(-7.75),
+                Units.inchesToMeters(21),
+                new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(23.162)));
+
         // Name of PhotonVision Camera
         public static final String RightRearCam = "Camera4";
 
@@ -114,30 +140,8 @@ public final class Constants {
                         Units.inchesToMeters(-11.12),
                         Units.inchesToMeters(-10.41),
                         Units.inchesToMeters(16.28),
-                        new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(179)))
-                .plus(groundToRobotTopPlate);
-
-        // Name of PhotonVision Camera
-        public static final String LeftRearCam = "Camera6";
-
-        // Position of PhotonVision Camera
-        public static final Transform3d robotToLeftRearCam = new Transform3d(
-                        Units.inchesToMeters(-11.12),
-                        Units.inchesToMeters(10.41),
-                        Units.inchesToMeters(16.28),
-                        new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(181)))
-                .plus(groundToRobotTopPlate);
-
-        // Name of PhotonVision Camera
-        public static final String LeftFrontCam = "Camera5";
-
-        // Position of PhotonVision Camera
-        public static final Transform3d robotToLeftFrontCam = new Transform3d(
-                        Units.inchesToMeters(-7.58),
-                        Units.inchesToMeters(10.81),
-                        Units.inchesToMeters(16.28),
-                        new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(19)))
-                .plus(groundToRobotTopPlate);
+                        new Rotation3d(0.0, Math.toRadians(-8.2), Math.toRadians(169.951)))
+                .plus(centerToRobotBRCorner);
 
         // Name of PhotonVision Camera
         public static final String RightFrontCam = "Camera3";
@@ -147,8 +151,8 @@ public final class Constants {
                         Units.inchesToMeters(-7.58),
                         Units.inchesToMeters(-10.81),
                         Units.inchesToMeters(16.28),
-                        new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(-19)))
-                .plus(groundToRobotTopPlate);
+                        new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(-23.162)))
+                .plus(centerToRobotBRCorner);
 
         // Basic filtering thresholds
         public static final double MAX_AMBIGUITY = 0.2;
