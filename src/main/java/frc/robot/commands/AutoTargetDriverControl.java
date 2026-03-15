@@ -22,6 +22,7 @@ import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AutoMath;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -37,8 +38,10 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
 
+        LoggedNetworkNumber tip_to_rpm = new LoggedNetworkNumber("/Shooter/Tip To RPM", TIP_TO_RPM);
+
         Supplier<Double> shooterSpeed =
-                () -> TIP_TO_RPM * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
+                () -> tip_to_rpm.get() * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
         Supplier<Rotation2d> targetAngle =
                 () -> AutoMath.getRobotAngleToTarget(m_Drive.getPose(), HUB_POSITION.toPose2d());
         Supplier<Double> correctedRobotAngle = () -> (Math.abs(

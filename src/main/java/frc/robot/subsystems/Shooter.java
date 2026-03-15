@@ -36,10 +36,10 @@ public class Shooter extends SubsystemBase {
         leftMotor.setFollower(rightMotor, MotorAlignmentValue.Opposed);
 
         leftMotor.setInverted(InvertedValue.CounterClockwise_Positive);
-        leftMotor.setStatorCurrentLimit(120);
-        leftMotor2.setStatorCurrentLimit(120);
-        rightMotor.setStatorCurrentLimit(120);
-        rightMotor2.setStatorCurrentLimit(120);
+        leftMotor.setStatorCurrentLimit(40);
+        leftMotor2.setStatorCurrentLimit(40);
+        rightMotor.setStatorCurrentLimit(40);
+        rightMotor2.setStatorCurrentLimit(40);
     }
 
     public Command setShooterRPM(Supplier<Double> rpm) {
