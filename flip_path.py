@@ -14,7 +14,7 @@ import copy
 from pathlib import Path
 
 # Standard FRC field height in meters (2023–2025 fields are 8.21 m tall)
-FIELD_HEIGHT_METERS = 8.21
+FIELD_HEIGHT_METERS = 8.069
 
 
 def flip_y(y: float) -> float:

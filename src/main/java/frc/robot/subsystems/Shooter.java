@@ -26,7 +26,7 @@ public class Shooter extends SubsystemBase {
     private final KrakenX60 rightMotor = new KrakenX60(ShooterConstants.RIGHT_MOTOR_ID);
     private final KrakenX60 rightMotor2 = new KrakenX60(ShooterConstants.RIGHT_MOTOR2_ID);
 
-    PidTuner shooterPidTuner = new PidTuner("/Shooter/", 0.2, 0.02, 0.0, 0.0, 0.12);
+    PidTuner shooterPidTuner = new PidTuner("/Shooter/", 0.6, 0.0, 0.0, 0.0, 0.12);
 
     LoggedNetworkNumber manualRPM = new LoggedNetworkNumber("/Shooter/Target RPM", 2900.0);
 
@@ -67,8 +67,9 @@ public class Shooter extends SubsystemBase {
     }
 
     public Boolean isAtSpeed() {
-        boolean atSpeed = (RPM.convertFrom(leftMotor.getVelocity().getValueAsDouble(), RotationsPerSecond) - 50.0)
-                >= manualRPM.get();
+        boolean atSpeed = Math.abs(RPM.convertFrom(leftMotor.getVelocity().getValueAsDouble(), RotationsPerSecond)
+                        - manualRPM.get())
+                < 100.0;
         return atSpeed;
     }
 
@@ -76,7 +77,8 @@ public class Shooter extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         if (shooterPidTuner.updated()) leftMotor.updateFromTuner(shooterPidTuner);
-        Logger.recordOutput("Shooter/Current RPM", leftMotor.getVelocity().getValueAsDouble() * 60);
+        Logger.recordOutput(
+                "Shooter/Current RPM", RPM.convertFrom(leftMotor.getVelocity().getValueAsDouble(), RotationsPerSecond));
 
         Logger.recordOutput("Shooter/At Speed", isAtSpeed());
         Logger.recordOutput("Shooter/Manual Mode", Math.abs(manualRPM.get() - 3050.0) <= 2);

@@ -18,14 +18,14 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class FullSend extends SubsystemBase {
     /** Creates a new FullSend. */
-    private final KrakenX60 fullSendMotor = new KrakenX60(FullSendConstants.MAIN_MOTOR_ID);
+    private final KrakenX60 fullSendMotor = new KrakenX60(FullSendConstants.MOTOR_ID);
 
     // TODO: Tune and set defaults
-    private final PidTuner fullSendPidTuner = new PidTuner("/FullSend/", 0.1, 0.02, 0.0, 0.0, 0.11);
+    private final PidTuner fullSendPidTuner = new PidTuner("/FullSend/", 0.6, 0.0, 0.0, 0.0, 0.13);
 
     public FullSend() {
         fullSendMotor.setInverted(InvertedValue.Clockwise_Positive);
-        fullSendMotor.setStatorCurrentLimit(30);
+        fullSendMotor.setStatorCurrentLimit(50);
     }
 
     public Command setFullSendVoltage(Supplier<Double> voltage) {
@@ -39,7 +39,7 @@ public class FullSend extends SubsystemBase {
 
     public Command setFullSendRPM(Supplier<Double> rpm) {
         return run(() -> {
-                    fullSendMotor.setVelocity(rpm.get(), RPM);
+                    fullSendMotor.setVelocity(rpm.get() / FullSendConstants.GEAR_RATIO, RPM);
                 })
                 .handleInterrupt(() -> {
                     fullSendMotor.setVoltage(0.0);
@@ -47,7 +47,7 @@ public class FullSend extends SubsystemBase {
     }
 
     public Command manualFullSendRPM(Supplier<Boolean> reverse) {
-        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/FullSend/Target RPM", 5000.0);
+        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/FullSend/Target RPM", 1000.0);
         return setFullSendRPM(() -> (reverse.get() ? -rpm.get() : rpm.get()));
     }
 

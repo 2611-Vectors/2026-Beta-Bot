@@ -13,7 +13,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
@@ -41,7 +41,7 @@ public class AutoTarget extends SequentialCommandGroup {
                         ? Math.abs(m_Drive.getRotation().getDegrees() - 180.0)
                         : Math.abs(m_Drive.getRotation().getDegrees() + 180.0)));
         Supplier<Double> correctedTargetAngle = () -> Math.abs(
-                DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
+                DriverStation.getAlliance().orElse(Alliance.Blue) != Alliance.Red
                         ? flipAngle(targetAngle.get().getDegrees())
                         : targetAngle.get().getDegrees());
         Supplier<Double> angleError = () -> correctedTargetAngle.get() - correctedRobotAngle.get();
@@ -56,7 +56,7 @@ public class AutoTarget extends SequentialCommandGroup {
                                     Logger.recordOutput("Targeting/Target Angle", correctedTargetAngle.get());
                                     Logger.recordOutput("Targeting/Angle Error", angleError.get());
                                 }))
-                        .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= AutoConstants.ROTATION_ERROR)),
+                        .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= RobotConstants.ROTATION_ERROR)),
                 new ParallelCommandGroup(
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
                         DriveCommands.joystickDriveAtAngle(m_Drive, () -> 0.0, () -> 0.0, () -> targetAngle.get()),

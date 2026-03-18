@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
@@ -67,7 +67,7 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                                     Logger.recordOutput("Targeting/Target Angle", correctedTargetAngle.get());
                                     Logger.recordOutput("Targeting/Angle Error", angleError.get());
                                 }))
-                        .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= AutoConstants.ROTATION_ERROR)),
+                        .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= RobotConstants.ROTATION_ERROR)),
                 new ParallelCommandGroup(
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
                         DriveCommands.joystickDriveAtAngle(

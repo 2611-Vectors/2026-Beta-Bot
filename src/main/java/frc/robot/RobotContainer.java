@@ -21,6 +21,7 @@ import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
+import frc.robot.VectorKit.hardware.LoggedPDH;
 import frc.robot.VectorKit.vision.Vision;
 import frc.robot.VectorKit.vision.VisionIOPhotonVision;
 import frc.robot.VectorKit.vision.VisionIOPhotonVisionSim;
@@ -30,7 +31,6 @@ import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathfindToStart;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.FullSend;
-import frc.robot.subsystems.Hood;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Pivot;
 import frc.robot.subsystems.Shooter;
@@ -57,10 +57,12 @@ public class RobotContainer {
     private final Pivot m_Pivot;
     private final Transition m_Transition;
     private final FullSend m_FullSend;
-    private final Hood m_Hood;
 
     @SuppressWarnings("unused")
     private final Vision m_Vision;
+
+    @SuppressWarnings("unused")
+    private final LoggedPDH m_pdh;
 
     // Controller
     private final CommandXboxController m_DriverController =
@@ -78,7 +80,10 @@ public class RobotContainer {
         m_Intake = new Intake();
         m_Pivot = new Pivot();
         m_FullSend = new FullSend();
-        m_Hood = new Hood();
+
+        m_pdh = new LoggedPDH().withIref(200);
+
+        // m_Hood = new Hood();
 
         switch (Constants.currentMode) {
             case REAL:
@@ -140,7 +145,6 @@ public class RobotContainer {
         NamedCommands.registerCommand("runTransition", m_Transition.setLowerTransitionRPM(() -> 1000.0));
         NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
         NamedCommands.registerCommand("intakeOut", m_Pivot.dumbIntakeOut());
-        NamedCommands.registerCommand("resetHood", m_Hood.setHoodPos(() -> 0.65));
 
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -170,8 +174,6 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        m_Hood.setDefaultCommand(m_Hood.manualHoodPos());
-
         // Default command, normal field-relative drive
         m_Drive.setDefaultCommand(DriveCommands.joystickDrive(
                 m_Drive,

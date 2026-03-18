@@ -54,7 +54,7 @@ public final class Constants {
         public static final double LINEAR_ACTUATOR_MAXIMUM = 1.0;
 
         public static final double SHOOTER_WHEEL_DIAMETER = Units.inchesToMeters(3.0);
-        public static final double TIP_TO_RPM = 325.0;
+        public static final double TIP_TO_RPM = 425.0;
         public static final double GRAVITATIONAL_CONSTANT = 9.8; // m/s
         public static final double INITIAL_HEIGHT = Units.inchesToMeters(18.33);
         // public static final double LAUNCH_ANGLE = 0.93;
@@ -65,7 +65,8 @@ public final class Constants {
     }
 
     public static class FullSendConstants {
-        public static final int MAIN_MOTOR_ID = 60;
+        public static final int MOTOR_ID = 60;
+        public static final double GEAR_RATIO = 1.0 / 4.0;
     }
 
     public static class IntakeConstants {
@@ -73,7 +74,7 @@ public final class Constants {
         public static final int WHEEL_MOTOR_ID = 31;
 
         public static final int PIVOT_ENCODER_ID = 0;
-        public static final double PIVOT_ENCODER_OFFSET = 120;
+        public static final double PIVOT_ENCODER_OFFSET = 115;
 
         public static final double PIVOT_GEAR_RATIO = 1.0 / 25.0;
         public static final double INTAKE_GEAR_RATIO = 1.0 / 2.0;
@@ -115,7 +116,7 @@ public final class Constants {
                 Units.inchesToMeters(-10.5),
                 Units.inchesToMeters(12),
                 Units.inchesToMeters(21),
-                new Rotation3d(0.0, Math.toRadians(-10), Math.toRadians(180.985)));
+                new Rotation3d(Math.toRadians(-2), Math.toRadians(-10), Math.toRadians(180.985)));
 
         // Name of PhotonVision Camera
         public static final String LeftFrontCam = "Camera5";
@@ -174,9 +175,10 @@ public final class Constants {
                 new Rotation3d()); // Change 5.9 to 70" (2" below top of target)
     }
 
-    public static class AutoConstants {
+    public static class RobotConstants {
+        public static final int PDH_ID = 1;
         public static final double ROBOT_MASS_KG = Units.lbsToKilograms(137.95);
-        public static final double ROBOT_MOI = 4.9;
+        public static final double ROBOT_MOI = 5.5;
         public static final double WHEEL_COF_FRICTION = 2.255;
         public static final double ROTATION_ERROR = 2.0;
     }
