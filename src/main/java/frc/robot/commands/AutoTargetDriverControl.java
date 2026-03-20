@@ -74,11 +74,11 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                                 m_Drive,
                                 () -> -m_DriverController.getLeftY(),
                                 () -> -m_DriverController.getLeftX(),
-                                () -> targetAngle.get())));
-        // new ParallelCommandGroup(
-        //                 m_FullSend.manualFullSendRPM(() -> false),
-        //                 m_Transition.manualTransitionRPM(() -> false))
-        //         .onlyIf(() -> m_DriverController.rightTrigger().getAsBoolean())));
+                                () -> targetAngle.get()),
+                        new ParallelCommandGroup(
+                                        m_FullSend.manualFullSendRPM(() -> false),
+                                        m_Transition.manualLowerTransitionRPM(() -> false))
+                                .onlyIf(() -> m_DriverController.rightTrigger().getAsBoolean())));
     }
 
     public static double flipAngle(double angle) {
