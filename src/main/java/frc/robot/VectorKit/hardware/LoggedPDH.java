@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.HashMap;
+import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 
 public class LoggedPDH extends SubsystemBase {
@@ -18,6 +20,8 @@ public class LoggedPDH extends SubsystemBase {
     private double runningEffAhMatch = 0, runningEffAhTotal = 0;
     private double runningAMatch = 0, runningATotal = 0;
     private double runningAhMatch = 0, runningAhTotal = 0;
+    private Map<mechs, Double> runningATotals = new HashMap<>();
+    private Map<mechs, Double> runningAhTotals = new HashMap<>();
     // private double sumIk = 0.0, totalTime = 0.0;
     private double Iref = 0;
     private int matchNum = 0;
@@ -30,6 +34,11 @@ public class LoggedPDH extends SubsystemBase {
 
     public LoggedPDH(int ID, ModuleType type) {
         kPDH = new PowerDistribution(ID, type);
+
+        for (var mech : mechs.values()) {
+            runningATotals.put(mech, 0.0);
+            runningAhTotals.put(mech, 0.0);
+        }
 
         // Set the match identifier based on the match type (if FMS is attached)
         if (DriverStation.isFMSAttached()) {
@@ -99,6 +108,32 @@ public class LoggedPDH extends SubsystemBase {
             double A = chLogs[i], Ah = A * dt / 3600.0;
             Logger.recordOutput(String.format("PDH/Amps/ch-%d", i), A);
             Logger.recordOutput(String.format("PDH/Amp Hours/ch-%d", i), Ah);
+            switch (i) {
+                case 0, 1, 3, 4, 15, 16, 17, 18, 19:
+                    runningATotals.put(mechs.Drivetrain, runningATotals.get(mechs.Drivetrain) + A);
+                    runningAhTotals.put(mechs.Drivetrain, runningAhTotals.get(mechs.Drivetrain) + Ah);
+                    break;
+                case 7, 13:
+                    runningATotals.put(mechs.Intake, runningATotals.get(mechs.Intake) + A);
+                    runningAhTotals.put(mechs.Intake, runningAhTotals.get(mechs.Intake) + Ah);
+                    break;
+                case 8:
+                    runningATotals.put(mechs.Transition, runningATotals.get(mechs.Transition) + A);
+                    runningAhTotals.put(mechs.Transition, runningAhTotals.get(mechs.Transition) + Ah);
+                    break;
+                case 5, 6, 10, 11:
+                    runningATotals.put(mechs.Shooter, runningATotals.get(mechs.Shooter) + A);
+                    runningAhTotals.put(mechs.Shooter, runningAhTotals.get(mechs.Shooter) + Ah);
+                    break;
+                case 14:
+                    runningATotals.put(mechs.FullSend, runningATotals.get(mechs.FullSend) + A);
+                    runningAhTotals.put(mechs.FullSend, runningAhTotals.get(mechs.FullSend) + Ah);
+                    break;
+                case 20, 21, 22:
+                    runningATotals.put(mechs.Misc, runningATotals.get(mechs.Misc) + A);
+                    runningAhTotals.put(mechs.Misc, runningAhTotals.get(mechs.Misc) + Ah);
+                    break;
+            }
         }
 
         // Log total amperage data
@@ -106,6 +141,11 @@ public class LoggedPDH extends SubsystemBase {
         Logger.recordOutput("PDH/Amps", tA);
         Logger.recordOutput("PDH/Amp Hours", tAh);
         Logger.recordOutput("PDH/Eff Amp Hours", eAh);
+
+        for (var total : runningATotals.entrySet())
+            Logger.recordOutput(String.format("PDH/%s Amps", total.getKey().toString()), total.getValue());
+        for (var total : runningAhTotals.entrySet())
+            Logger.recordOutput(String.format("PDH/%s Amp Hours", total.getKey().toString()), total.getValue());
 
         // Update running totals
         runningAMatch += tA;
@@ -134,5 +174,14 @@ public class LoggedPDH extends SubsystemBase {
         // Update helper variables
         matchStarted = DriverStation.isEnabled();
         lt = time;
+    }
+
+    private enum mechs {
+        Drivetrain,
+        Intake,
+        Shooter,
+        FullSend,
+        Transition,
+        Misc
     }
 }

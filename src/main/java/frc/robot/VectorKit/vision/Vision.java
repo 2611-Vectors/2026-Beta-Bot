@@ -17,7 +17,6 @@ import static frc.robot.Constants.VisionConstants.*;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
-import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,8 +44,8 @@ public class Vision extends SubsystemBase {
     private final VisionIOInputsAutoLogged[] inputs;
     private final Alert[] disconnectedAlerts;
 
-    LinearFilter filterY = LinearFilter.movingAverage(5);
-    LinearFilter filterX = LinearFilter.movingAverage(5);
+    // LinearFilter filterY = LinearFilter.movingAverage(3);
+    // LinearFilter filterX = LinearFilter.movingAverage(3);
 
     public Vision(VisionConsumer consumer, VisionIO... io) {
         this.consumer = consumer;
@@ -149,12 +148,13 @@ public class Vision extends SubsystemBase {
                     angularStdDev *= cameraStdDevFactors[cameraIndex];
                 }
 
-                Pose2d currentPose = observation.pose().toPose2d();
-                double newX = filterX.calculate(currentPose.getX());
-                double newY = filterY.calculate(currentPose.getY());
+                // Pose2d currentPose = observation.pose().toPose2d();
+                // double newX = filterX.calculate(currentPose.getX());
+                // double newY = filterY.calculate(currentPose.getY());
 
                 consumer.accept(
-                        new Pose2d(newX, newY, currentPose.getRotation()),
+                        observation.pose().toPose2d(),
+                        // new Pose2d(newX, newY, currentPose.getRotation()),
                         observation.timestamp(),
                         VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
             }

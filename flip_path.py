@@ -8,9 +8,7 @@ Usage:
 If no output file is given, the result is saved as <input>_flipped.path
 """
 
-import json
-import sys
-import copy
+import json, sys, copy, re
 from pathlib import Path
 
 # Standard FRC field height in meters (2023–2025 fields are 8.21 m tall)
@@ -82,31 +80,45 @@ def flip_path(data: dict) -> dict:
 
     return flipped
 
+def swap_sides(name: str) -> str:
+    def replacer(match):
+        word = match.group()
+        if word.lower() == "right":
+            if word.isupper():   return "LEFT"
+            if word.istitle():   return "Left"
+            return "left"
+        else:
+            if word.isupper():   return "RIGHT"
+            if word.istitle():   return "Right"
+            return "right"
+
+    return re.sub(r'\b(right|left)\b', replacer, name, flags=re.IGNORECASE)
 
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
         sys.exit(1)
 
-    input_path = Path(sys.argv[1])
-    if not input_path.exists():
-        print(f"Error: file not found: {input_path}")
-        sys.exit(1)
+    for i in range(1, len(sys.argv)):
+        input_path = Path(sys.argv[i])
+        if not input_path.exists():
+            print(f"Error: file not found: {input_path}")
+            sys.exit(1)
 
-    if len(sys.argv) >= 3:
-        output_path = Path(sys.argv[2])
-    else:
-        output_path = input_path.with_name(input_path.stem + "_flipped" + input_path.suffix)
+        if input_path.name.lower().rfind("right") != -1 or input_path.name.lower().rfind("left") != -1:
+            output_path = input_path.with_name(swap_sides(input_path.name))
+        else:
+            output_path = input_path.with_name(input_path.stem + "_flipped" + input_path.suffix)
 
-    with open(input_path, "r") as f:
-        data = json.load(f)
+        with open(input_path, "r") as f:
+            data = json.load(f)
 
-    flipped = flip_path(data)
+        flipped = flip_path(data)
 
-    with open(output_path, "w") as f:
-        json.dump(flipped, f, indent=2)
+        with open(output_path, "w") as f:
+            json.dump(flipped, f, indent=2)
 
-    print(f"✓  Flipped path saved to: {output_path}")
+        print(f"✓  Flipped path saved to: {output_path}")
 
 
 if __name__ == "__main__":

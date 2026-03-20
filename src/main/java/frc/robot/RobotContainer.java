@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
-import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
@@ -138,9 +137,9 @@ public class RobotContainer {
                 break;
         }
 
+        NamedCommands.registerCommand("autoTarget", new AutoTarget(m_Drive, m_Shooter, m_FullSend, m_Transition));
         NamedCommands.registerCommand(
-                "autoTarget", new AutoTarget(m_Drive, m_Shooter, m_Intake, m_FullSend, m_Transition));
-        NamedCommands.registerCommand("runIntake", m_Intake.setIntakeRPM(() -> 2000.0));
+                "runIntake", m_Intake.setIntakeRPM(() -> 2000.0).onlyWhile(() -> m_Pivot.intakeCanRun()));
         NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
         NamedCommands.registerCommand("runTransition", m_Transition.setLowerTransitionRPM(() -> 1000.0));
         NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
@@ -224,9 +223,7 @@ public class RobotContainer {
                 .toggleOnTrue(
                         new AutoTargetDriverControl(m_Drive, m_Shooter, m_FullSend, m_Transition, m_DriverController));
 
-        m_OperatorController
-                .a()
-                .whileTrue(new ParallelRaceGroup(m_Pivot.dumbIntakeOut(), m_Intake.setIntakeRPM(() -> 500.0)));
+        m_OperatorController.a().whileTrue(m_Pivot.dumbIntakeOut());
     }
 
     /**
