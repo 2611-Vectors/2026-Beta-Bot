@@ -1,4 +1,4 @@
-package frc.robot.VectorKit.vision;
+package frc.VectorKit.vision;
 
 import static frc.robot.Constants.VisionConstants.aprilTagLayout;
 

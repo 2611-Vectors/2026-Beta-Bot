@@ -11,12 +11,13 @@
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 // GNU General Public License for more details.
 
-package frc.robot.VectorKit.vision;
+package frc.VectorKit.vision;
 
 import static frc.robot.Constants.VisionConstants.*;
 
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -28,8 +29,9 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.Alert;
 import edu.wpi.first.wpilibj.Alert.AlertType;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.VectorKit.vision.VisionIO.LoggedVisionIOInputs;
+import frc.VectorKit.vision.VisionIO.PoseObservationType;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.VectorKit.vision.VisionIO.PoseObservationType;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -41,20 +43,20 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public class Vision extends SubsystemBase {
     private final VisionConsumer consumer;
     private final VisionIO[] io;
-    private final VisionIOInputsAutoLogged[] inputs;
+    private final LoggedVisionIOInputs[] inputs;
     private final Alert[] disconnectedAlerts;
 
-    // LinearFilter filterY = LinearFilter.movingAverage(3);
-    // LinearFilter filterX = LinearFilter.movingAverage(3);
+    LinearFilter filterY = LinearFilter.movingAverage(5);
+    LinearFilter filterX = LinearFilter.movingAverage(5);
 
     public Vision(VisionConsumer consumer, VisionIO... io) {
         this.consumer = consumer;
         this.io = io;
 
         // Initialize inputs
-        this.inputs = new VisionIOInputsAutoLogged[io.length];
+        this.inputs = new LoggedVisionIOInputs[io.length];
         for (int i = 0; i < inputs.length; i++) {
-            inputs[i] = new VisionIOInputsAutoLogged();
+            inputs[i] = new LoggedVisionIOInputs();
         }
 
         // Initialize disconnected alerts
@@ -148,13 +150,12 @@ public class Vision extends SubsystemBase {
                     angularStdDev *= cameraStdDevFactors[cameraIndex];
                 }
 
-                // Pose2d currentPose = observation.pose().toPose2d();
-                // double newX = filterX.calculate(currentPose.getX());
-                // double newY = filterY.calculate(currentPose.getY());
+                Pose2d currentPose = observation.pose().toPose2d();
+                double newX = filterX.calculate(currentPose.getX());
+                double newY = filterY.calculate(currentPose.getY());
 
                 consumer.accept(
-                        observation.pose().toPose2d(),
-                        // new Pose2d(newX, newY, currentPose.getRotation()),
+                        new Pose2d(newX, newY, currentPose.getRotation()),
                         observation.timestamp(),
                         VecBuilder.fill(linearStdDev, linearStdDev, angularStdDev));
             }

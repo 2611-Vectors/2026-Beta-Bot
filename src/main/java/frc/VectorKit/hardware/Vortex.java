@@ -1,4 +1,4 @@
-package frc.robot.VectorKit.hardware;
+package frc.VectorKit.hardware;
 
 import static com.revrobotics.PersistMode.kNoPersistParameters;
 import static com.revrobotics.ResetMode.kNoResetSafeParameters;
