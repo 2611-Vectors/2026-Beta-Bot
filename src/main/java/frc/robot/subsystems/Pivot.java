@@ -54,7 +54,7 @@ public class Pivot extends SubsystemBase {
 
     public Command dumbIntakeOut() {
         return run(() -> {
-                    pivotMotor.setVoltage(10.0);
+                    pivotMotor.setVoltage(11.0);
                 })
                 .until(() -> intakeIsOut())
                 .andThen(() -> {
