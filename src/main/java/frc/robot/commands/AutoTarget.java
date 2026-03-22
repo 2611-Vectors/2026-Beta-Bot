@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.Constants.AutoConstants;
-import frc.robot.subsystems.Intake;
+import frc.robot.Constants.RobotConstants;
+import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
@@ -27,7 +27,7 @@ import org.littletonrobotics.junction.Logger;
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoTarget extends SequentialCommandGroup {
     /** Creates a new AutoShooterDistance. */
-    public AutoTarget(Drive m_Drive, Shooter m_Shooter, Intake m_Intake, Transition m_Transition) {
+    public AutoTarget(Drive m_Drive, Shooter m_Shooter, FullSend m_FullSend, Transition m_Transition) {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
 
@@ -40,7 +40,7 @@ public class AutoTarget extends SequentialCommandGroup {
                         ? Math.abs(m_Drive.getRotation().getDegrees() - 180.0)
                         : Math.abs(m_Drive.getRotation().getDegrees() + 180.0)));
         Supplier<Double> correctedTargetAngle = () -> Math.abs(
-                DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
+                DriverStation.getAlliance().orElse(Alliance.Blue) != Alliance.Red
                         ? flipAngle(targetAngle.get().getDegrees())
                         : targetAngle.get().getDegrees());
         Supplier<Double> angleError = () -> correctedTargetAngle.get() - correctedRobotAngle.get();
@@ -55,13 +55,12 @@ public class AutoTarget extends SequentialCommandGroup {
                                     Logger.recordOutput("Targeting/Target Angle", correctedTargetAngle.get());
                                     Logger.recordOutput("Targeting/Angle Error", angleError.get());
                                 }))
-                        .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= AutoConstants.ROTATION_ERROR)),
+                        .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= RobotConstants.ROTATION_ERROR)),
                 new ParallelCommandGroup(
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
                         DriveCommands.joystickDriveAtAngle(m_Drive, () -> 0.0, () -> 0.0, () -> targetAngle.get()),
-                        m_Shooter.setFullSendRPM(() -> 5000.0),
-                        m_Transition.setTransitionRPM(() -> 750.0, () -> 500.0),
-                        m_Intake.setIntakeRPM(() -> 500.0)));
+                        m_FullSend.setFullSendRPM(() -> 5000.0),
+                        m_Transition.setLowerTransitionRPM(() -> 2000.0)));
     }
 
     public static double flipAngle(double angle) {

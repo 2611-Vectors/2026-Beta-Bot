@@ -3,14 +3,16 @@ package frc.robot.VectorKit.hardware;
 import com.ctre.phoenix6.Utils;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.simulation.DutyCycleEncoderSim;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import java.util.Random;
+import java.util.function.Supplier;
 
-public class AbsoluteEncoder extends DutyCycleEncoder implements Subsystem {
+public class AbsoluteEncoder extends DutyCycleEncoder {
+    private final double kOffset;
     private final DutyCycleEncoderSim m_sim;
+    private double simState;
 
-    private SourceFeeder kSourceFeeder;
-    private double kSimState, kOffset, kGearRatio, kMin, kMax;
+    private Supplier<Double> m_sourcePosition;
+    private double kGearRatio;
 
     private boolean kNoiseEnabled = false;
     private Random kNoise = new Random();
@@ -19,11 +21,7 @@ public class AbsoluteEncoder extends DutyCycleEncoder implements Subsystem {
 
     public AbsoluteEncoder(int channel, double offset) {
         super(channel);
-
-        kMin = 0.0;
-        kMax = 360.0;
-
-        kOffset = (offset + kMin) / kMax;
+        kOffset = (offset / 360.0);
 
         if (Utils.isSimulation()) {
             m_sim = new DutyCycleEncoderSim(channel);
@@ -34,20 +32,14 @@ public class AbsoluteEncoder extends DutyCycleEncoder implements Subsystem {
         }
     }
 
-    public void attachSource(SourceFeeder source, int sourceGearTeeth, int encoderGearTeeth) {
-        kSourceFeeder = source;
+    public void attachSource(Supplier<Double> source, int sourceGearTeeth, int encoderGearTeeth) {
+        m_sourcePosition = source;
         kGearRatio = (double) sourceGearTeeth / (double) encoderGearTeeth;
     }
 
-    public void attachSource(SourceFeeder source, double gearRatio) {
-        kSourceFeeder = source;
-        kGearRatio = gearRatio;
-    }
-
-    public void setRange(double min, double max) {
-        kOffset = (((kOffset * kMax) - kMin) + min) / max;
-        kMin = min;
-        kMax = max;
+    public void attachSource(Supplier<Double> source, double sourceGearTeeth, double encoderGearTeeth) {
+        m_sourcePosition = source;
+        kGearRatio = sourceGearTeeth / encoderGearTeeth;
     }
 
     public void setReversed(boolean reversed) {
@@ -55,7 +47,6 @@ public class AbsoluteEncoder extends DutyCycleEncoder implements Subsystem {
     }
 
     public double getRaw() {
-        if (Utils.isSimulation()) return getSimRaw();
         return super.get();
     }
 
@@ -67,51 +58,43 @@ public class AbsoluteEncoder extends DutyCycleEncoder implements Subsystem {
         if (degrees < 0.0) degrees += 1.0;
         if (degrees > 1.0) degrees -= 1.0;
         if (kIsReversed) degrees = 1.0 - degrees;
-        return (degrees * kMax + kMin);
+        return degrees * 360.0;
     }
 
-    public double get(double offset) {
-        if (Utils.isSimulation()) return getSim(offset);
-        double degrees = getRaw() - offset;
+    public double get(double min, double max) {
+        if (Utils.isSimulation()) return getSim(min, max);
+        double degrees = getRaw() - kOffset;
         if (degrees < 0.0) degrees += 1.0;
         if (degrees > 1.0) degrees -= 1.0;
         if (kIsReversed) degrees = 1.0 - degrees;
-        return (degrees * kMax + kMin);
+        return (degrees * max + min);
     }
 
-    private double getSimRaw() {
-        return kSimState;
+    public double getSimRaw() {
+        return simState;
     }
 
-    private double getSim() {
+    public double getSim() {
         double degrees = getSimRaw() - kOffset;
         if (degrees < 0.0) degrees += 1.0;
         if (degrees > 1.0) degrees -= 1.0;
         if (kIsReversed) degrees = 1.0 - degrees;
-        return (degrees * kMax + kMin);
+        return degrees * 360.0;
     }
 
-    private double getSim(double offset) {
-        double degrees = getSimRaw() - offset;
+    public double getSim(double min, double max) {
+        double degrees = getSimRaw() - kOffset;
         if (degrees < 0.0) degrees += 1.0;
         if (degrees > 1.0) degrees -= 1.0;
         if (kIsReversed) degrees = 1.0 - degrees;
-        return (degrees * kMax + kMin);
+        return (degrees * max + min);
     }
 
-    @Override
-    public void periodic() {
-        if (kSourceFeeder != null) {
-            double out = (kSourceFeeder.get() * kGearRatio) % 1.0;
-            if (kNoiseEnabled) out += kNoise.nextDouble() * (kNoise.nextBoolean() ? -1e-3 : 1e-3);
+    public void updateSim() {
+        double out = (m_sourcePosition.get() * kGearRatio) % 1.0;
+        if (kNoiseEnabled) out += kNoise.nextDouble() * (kNoise.nextBoolean() ? -1e-3 : 1e-3);
 
-            if (Utils.isSimulation()) m_sim.set(out);
-            kSimState = out;
-        }
-    }
-
-    @FunctionalInterface
-    public static interface SourceFeeder {
-        public double get();
+        if (Utils.isSimulation()) m_sim.set(out);
+        simState = out;
     }
 }

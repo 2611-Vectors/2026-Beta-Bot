@@ -40,8 +40,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants;
-import frc.robot.Constants.AutoConstants;
 import frc.robot.Constants.Mode;
+import frc.robot.Constants.RobotConstants;
 import frc.robot.generated.TunerConstants;
 import frc.robot.util.LocalADStarAK;
 import java.util.concurrent.locks.Lock;
@@ -61,9 +61,9 @@ public class Drive extends SubsystemBase {
                     Math.hypot(TunerConstants.BackRight.LocationX, TunerConstants.BackRight.LocationY)));
 
     // PathPlanner config constants
-    private static final double ROBOT_MASS_KG = AutoConstants.ROBOT_MASS_KG;
-    private static final double ROBOT_MOI = AutoConstants.ROBOT_MOI;
-    private static final double WHEEL_COF = AutoConstants.WHEEL_COF_FRICTION;
+    private static final double ROBOT_MASS_KG = RobotConstants.ROBOT_MASS_KG;
+    private static final double ROBOT_MOI = RobotConstants.ROBOT_MOI;
+    private static final double WHEEL_COF = RobotConstants.WHEEL_COF_FRICTION;
     private static final RobotConfig PP_CONFIG = new RobotConfig(
             ROBOT_MASS_KG,
             ROBOT_MOI,

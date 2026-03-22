@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 public class PathfindToStart extends SequentialCommandGroup {
     public PathfindToStart(PathPlannerAuto selectedAuto) {
         Pose2d startPose = flipRed(selectedAuto.getStartingPose());
-        PathConstraints constraints = new PathConstraints(1.0, 1.0, 90.0, 720.0);
+        PathConstraints constraints = new PathConstraints(3.0, 2.5, 90.0, 720.0);
 
         addCommands(AutoBuilder.pathfindToPose(startPose, constraints), selectedAuto);
     }

@@ -14,13 +14,15 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.robot.Constants.AutoConstants;
+import frc.robot.Constants.RobotConstants;
+import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AutoMath;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
@@ -28,12 +30,18 @@ import org.littletonrobotics.junction.Logger;
 public class AutoTargetDriverControl extends SequentialCommandGroup {
     /** Creates a new AutoShooterDistance. */
     public AutoTargetDriverControl(
-            Drive m_Drive, Shooter m_Shooter, Transition m_Transition, CommandXboxController m_DriverController) {
+            Drive m_Drive,
+            Shooter m_Shooter,
+            FullSend m_FullSend,
+            Transition m_Transition,
+            CommandXboxController m_DriverController) {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
 
+        LoggedNetworkNumber tip_to_rpm = new LoggedNetworkNumber("/Shooter/Tip To RPM", TIP_TO_RPM);
+
         Supplier<Double> shooterSpeed =
-                () -> TIP_TO_RPM * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
+                () -> tip_to_rpm.get() * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
         Supplier<Rotation2d> targetAngle =
                 () -> AutoMath.getRobotAngleToTarget(m_Drive.getPose(), HUB_POSITION.toPose2d());
         Supplier<Double> correctedRobotAngle = () -> (Math.abs(
@@ -59,7 +67,7 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                                     Logger.recordOutput("Targeting/Target Angle", correctedTargetAngle.get());
                                     Logger.recordOutput("Targeting/Angle Error", angleError.get());
                                 }))
-                        .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= AutoConstants.ROTATION_ERROR)),
+                        .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= RobotConstants.ROTATION_ERROR)),
                 new ParallelCommandGroup(
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
                         DriveCommands.joystickDriveAtAngle(

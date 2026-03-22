@@ -7,6 +7,8 @@
 
 package frc.robot.commands;
 
+import static edu.wpi.first.units.Units.*;
+
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -22,6 +24,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.Constants.ControllerConstants;
 import frc.robot.subsystems.drive.Drive;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -32,9 +35,9 @@ import java.util.function.Supplier;
 
 public class DriveCommands {
     private static final double DEADBAND = 0.1;
-    private static final double ANGLE_KP = 5.0;
+    private static final double ANGLE_KP = 6.5;
     private static final double ANGLE_KD = 0.4;
-    private static final double ANGLE_MAX_VELOCITY = 8.0;
+    private static final double ANGLE_MAX_VELOCITY = 12.0;
     private static final double ANGLE_MAX_ACCELERATION = 20.0;
     private static final double FF_START_DELAY = 2.0; // Secs
     private static final double FF_RAMP_RATE = 0.1; // Volts/Sec
@@ -72,12 +75,12 @@ public class DriveCommands {
                     double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
                     // Square rotation value for more precise control
-                    omega = Math.copySign(Math.pow(omega, 3), omega);
+                    omega = Math.copySign(Math.pow(omega, 3) * 0.75, omega);
 
                     // Convert to field relative speeds & send command
                     ChassisSpeeds speeds = new ChassisSpeeds(
-                            linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                            linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                            linearVelocity.getX() * ControllerConstants.MAX_DRIVE_SPEED.in(MetersPerSecond),
+                            linearVelocity.getY() * ControllerConstants.MAX_DRIVE_SPEED.in(MetersPerSecond),
                             omega * drive.getMaxAngularSpeedRadPerSec());
                     boolean isFlipped = DriverStation.getAlliance().isPresent()
                             && DriverStation.getAlliance().get() == Alliance.Red;
