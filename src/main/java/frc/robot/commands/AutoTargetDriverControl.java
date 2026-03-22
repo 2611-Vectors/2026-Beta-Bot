@@ -78,7 +78,7 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                         new ParallelCommandGroup(
                                         m_FullSend.manualFullSendRPM(() -> false),
                                         m_Transition.manualLowerTransitionRPM(() -> false))
-                                .onlyIf(() -> m_DriverController.rightTrigger().getAsBoolean())));
+                                .onlyWhile(() -> m_DriverController.rightTrigger().getAsBoolean())));
     }
 
     public static double flipAngle(double angle) {
