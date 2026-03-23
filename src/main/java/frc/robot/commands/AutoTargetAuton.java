@@ -14,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants.RobotConstants;
-import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
@@ -25,12 +24,9 @@ import org.littletonrobotics.junction.Logger;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AutoTarget extends SequentialCommandGroup {
+public class AutoTargetAuton extends SequentialCommandGroup {
     /** Creates a new AutoShooterDistance. */
-    public AutoTarget(Drive m_Drive, Shooter m_Shooter, FullSend m_FullSend, Transition m_Transition) {
-        // Add your commands in the addCommands() call, e.g.
-        // addCommands(new FooCommand(), new BarCommand());
-
+    public AutoTargetAuton(Drive m_Drive, Shooter m_Shooter, Transition m_Transition) {
         Supplier<Double> shooterSpeed =
                 () -> TIP_TO_RPM * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
         Supplier<Rotation2d> targetAngle =
@@ -59,8 +55,8 @@ public class AutoTarget extends SequentialCommandGroup {
                 new ParallelCommandGroup(
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
                         DriveCommands.joystickDriveAtAngle(m_Drive, () -> 0.0, () -> 0.0, () -> targetAngle.get()),
-                        m_FullSend.setFullSendRPM(() -> 5000.0),
-                        m_Transition.setLowerTransitionRPM(() -> 2000.0)));
+                        m_Shooter.setFullSendRPM(() -> 5000.0),
+                        m_Transition.setTransitionRPM(() -> 2000.0)));
     }
 
     public static double flipAngle(double angle) {

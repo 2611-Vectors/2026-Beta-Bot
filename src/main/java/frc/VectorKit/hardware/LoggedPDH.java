@@ -9,6 +9,9 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import org.littletonrobotics.junction.Logger;
 
 public class LoggedPDH extends SubsystemBase {
@@ -18,11 +21,15 @@ public class LoggedPDH extends SubsystemBase {
     private double runningEffAhMatch = 0, runningEffAhTotal = 0;
     private double runningAMatch = 0, runningATotal = 0;
     private double runningAhMatch = 0, runningAhTotal = 0;
+    private Map<String, Double> runningATotals = new HashMap<>();
+    private Map<String, Double> runningAhTotals = new HashMap<>();
     // private double sumIk = 0.0, totalTime = 0.0;
     private double Iref = 0;
     private int matchNum = 0;
     private boolean matchStarted = false;
     private String logBase = "";
+
+    private Map<String, int[]> mechMap;
 
     public LoggedPDH() {
         this(1, ModuleType.kRev);
@@ -33,6 +40,9 @@ public class LoggedPDH extends SubsystemBase {
 
         // Set the match identifier based on the match type (if FMS is attached)
         if (DriverStation.isFMSAttached()) {
+            // Get the match number if FMS is attached
+            matchNum = DriverStation.getMatchNumber();
+
             String mt = "";
             switch (DriverStation.getMatchType()) {
                 case Practice:
@@ -51,9 +61,14 @@ public class LoggedPDH extends SubsystemBase {
 
             logBase = String.format("PDH/%sMatch-%d/", mt, matchNum);
         }
+    }
 
-        // Get the match number if FMS is attached
-        if (DriverStation.isFMSAttached()) matchNum = DriverStation.getMatchNumber();
+    public void addMech(String name, int... pdhPorts) {
+        Arrays.sort(pdhPorts);
+        mechMap.put(name, pdhPorts);
+
+        runningATotals.put(name, 0.0);
+        runningAhTotals.put(name, 0.0);
     }
 
     // Using data collected from: https://www.revrobotics.com/content/docs/ES17-12_User_Guide.pdf
@@ -64,7 +79,7 @@ public class LoggedPDH extends SubsystemBase {
 
     private double getEffectiveAh(double currentAmps) {
         double k = getPeukertsExponent(currentAmps);
-        double dtHours = dt * 3600.0;
+        double dtHours = dt / 3600.0;
 
         // TODO: Dynamic Iref -- Requires extensive testing
         // sumIk += Math.pow(currentAmps, k) * dtHours;
@@ -90,21 +105,35 @@ public class LoggedPDH extends SubsystemBase {
         }
 
         // Update the Delta Time
-        dt = Timer.getFPGATimestamp() - lt;
+        double time = Timer.getFPGATimestamp();
+        dt = time - lt;
 
         // Log per-channel amperage data
         double[] chLogs = kPDH.getAllCurrents();
         for (int i = 0; i < chLogs.length; i++) {
-            double A = chLogs[i], Ah = A * dt * 3600.0;
+            double A = chLogs[i], Ah = A * dt / 3600.0;
             Logger.recordOutput(String.format("PDH/Amps/ch-%d", i), A);
             Logger.recordOutput(String.format("PDH/Amp Hours/ch-%d", i), Ah);
+
+            for (String mech : mechMap.keySet()) {
+                if (Arrays.binarySearch(mechMap.get(mech), i) >= 0) {
+                    runningATotals.put(mech, runningATotals.get(mech) + A);
+                    runningAhTotals.put(mech, runningAhTotals.get(mech) + Ah);
+                    break;
+                }
+            }
         }
 
         // Log total amperage data
-        double tA = kPDH.getTotalCurrent(), tAh = tA * dt * 3600.0, eAh = getEffectiveAh(tA);
+        double tA = kPDH.getTotalCurrent(), tAh = tA * dt / 3600.0, eAh = getEffectiveAh(tA);
         Logger.recordOutput("PDH/Amps", tA);
         Logger.recordOutput("PDH/Amp Hours", tAh);
         Logger.recordOutput("PDH/Eff Amp Hours", eAh);
+
+        for (var total : runningATotals.entrySet())
+            Logger.recordOutput(String.format("PDH/%s Amps", total.getKey().toString()), total.getValue());
+        for (var total : runningAhTotals.entrySet())
+            Logger.recordOutput(String.format("PDH/%s Amp Hours", total.getKey().toString()), total.getValue());
 
         // Update running totals
         runningAMatch += tA;
@@ -123,7 +152,7 @@ public class LoggedPDH extends SubsystemBase {
 
         // Update per-match data on DS disable
         if (!DriverStation.isEnabled() && matchStarted) {
-            if (!DriverStation.isFMSAttached()) logBase = String.format("PDH/Match-d/", matchNum);
+            if (!DriverStation.isFMSAttached()) logBase = String.format("PDH/Match-%d/", matchNum);
 
             Logger.recordOutput(String.format("%s/Amps", logBase), runningAMatch);
             Logger.recordOutput(String.format("%s/Amp Hours", logBase), runningAhMatch);
@@ -132,6 +161,6 @@ public class LoggedPDH extends SubsystemBase {
 
         // Update helper variables
         matchStarted = DriverStation.isEnabled();
-        lt = Timer.getFPGATimestamp();
+        lt = time;
     }
 }

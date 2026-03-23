@@ -16,22 +16,21 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.VectorKit.hardware.LoggedPDH;
 import frc.VectorKit.vision.Vision;
 import frc.VectorKit.vision.VisionIOPhotonVision;
 import frc.VectorKit.vision.VisionIOPhotonVisionSim;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
-import frc.robot.commands.AutoTarget;
-import frc.robot.commands.AutoTargetDriverControl;
+import frc.robot.commands.AutoTargetAuton;
+import frc.robot.commands.AutoTargetTeleOp;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathfindToStart;
+import frc.robot.commands.runTransition;
+import frc.robot.commands.runTransitionReverse;
 import frc.robot.generated.TunerConstants;
-import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Pivot;
+import frc.robot.subsystems.PDH;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
@@ -51,17 +50,16 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
     // Subsystems
     private final Drive m_Drive;
+
     private final Shooter m_Shooter;
     private final Intake m_Intake;
-    private final Pivot m_Pivot;
     private final Transition m_Transition;
-    private final FullSend m_FullSend;
 
     @SuppressWarnings("unused")
     private final Vision m_Vision;
 
     @SuppressWarnings("unused")
-    private final LoggedPDH m_pdh;
+    private final PDH m_pdh;
 
     // Controller
     private final CommandXboxController m_DriverController =
@@ -77,12 +75,8 @@ public class RobotContainer {
         m_Shooter = new Shooter();
         m_Transition = new Transition();
         m_Intake = new Intake();
-        m_Pivot = new Pivot();
-        m_FullSend = new FullSend();
 
-        m_pdh = new LoggedPDH().withIref(200);
-
-        // m_Hood = new Hood();
+        m_pdh = new PDH();
 
         switch (Constants.currentMode) {
             case REAL:
@@ -137,30 +131,19 @@ public class RobotContainer {
                 break;
         }
 
-        NamedCommands.registerCommand("autoTarget", new AutoTarget(m_Drive, m_Shooter, m_FullSend, m_Transition));
-        NamedCommands.registerCommand(
-                "runIntake", m_Intake.setIntakeRPM(() -> 3000.0).onlyWhile(() -> m_Pivot.intakeCanRun()));
+        NamedCommands.registerCommand("autoTarget", new AutoTargetAuton(m_Drive, m_Shooter, m_Transition));
+
+        NamedCommands.registerCommand("runIntake", m_Intake.setIntakeRPMSafe(() -> 3000.0));
         NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
-        NamedCommands.registerCommand("runTransition", m_Transition.setLowerTransitionRPM(() -> 1000.0));
-        NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
-        NamedCommands.registerCommand("intakeOut", m_Pivot.dumbIntakeOut());
+
+        NamedCommands.registerCommand("intakeOut", m_Intake.dumbIntakeOut());
+        NamedCommands.registerCommand("intakeHoldOut", m_Intake.holdIntakeOut());
 
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
         // Set up SysId routines
-        // autoChooser.addOption(
-        //         "Drive Wheel Radius Characterization", DriveCommands.wheelRadiusCharacterization(m_Drive));
-        // autoChooser.addOption("Drive Simple FF Characterization",
-        // DriveCommands.feedforwardCharacterization(m_Drive));
-        // autoChooser.addOption(
-        //         "Drive SysId (Quasistatic Forward)", m_Drive.sysIdQuasistatic(SysIdRoutine.Direction.kForward));
-        // autoChooser.addOption(
-        //         "Drive SysId (Quasistatic Reverse)", m_Drive.sysIdQuasistatic(SysIdRoutine.Direction.kReverse));
-        // autoChooser.addOption("Drive SysId (Dynamic Forward)",
-        // m_Drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
-        // autoChooser.addOption("Drive SysId (Dynamic Reverse)",
-        // m_Drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
+        // SysIdHelper.addSysIdRoutines(autoChooser, m_Drive);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -180,15 +163,6 @@ public class RobotContainer {
                 () -> -m_DriverController.getLeftX(),
                 () -> -m_DriverController.getRightX()));
 
-        // Lock to 0° when A button is held
-        m_DriverController
-                .a()
-                .whileTrue(DriveCommands.joystickDriveAtAngle(
-                        m_Drive,
-                        () -> -m_DriverController.getLeftY(),
-                        () -> -m_DriverController.getLeftX(),
-                        () -> Rotation2d.kZero));
-
         // Switch to X pattern when X button is pressed
         m_DriverController.x().onTrue(Commands.runOnce(m_Drive::stopWithX, m_Drive));
 
@@ -202,28 +176,18 @@ public class RobotContainer {
                         .ignoringDisable(true));
 
         m_OperatorController.rightTrigger().whileTrue(m_Intake.manualIntakeRPM(() -> false));
-
         m_OperatorController.leftTrigger().whileTrue(m_Intake.manualIntakeRPM(() -> true));
 
-        m_DriverController
-                .rightTrigger()
-                .whileTrue(new ParallelCommandGroup(
-                        m_FullSend.manualFullSendRPM(() -> false), m_Transition.manualLowerTransitionRPM(() -> false)));
+        m_DriverController.rightTrigger().whileTrue(new runTransition(m_Shooter, m_Transition));
+        m_DriverController.rightBumper().whileTrue(new runTransitionReverse(m_Shooter, m_Transition));
 
-        m_DriverController
-                .rightBumper()
-                .whileTrue(new ParallelCommandGroup(
-                        m_FullSend.manualFullSendRPM(() -> true), m_Transition.manualLowerTransitionRPM(() -> true)));
-
-        // m_DriverController.leftTrigger().toggleOnTrue(m_Shooter.setShooterRPM(() -> 3050.0));
         m_DriverController.leftTrigger().toggleOnTrue(m_Shooter.manualShooterRPM());
 
         m_DriverController
                 .leftBumper()
-                .toggleOnTrue(
-                        new AutoTargetDriverControl(m_Drive, m_Shooter, m_FullSend, m_Transition, m_DriverController));
+                .toggleOnTrue(new AutoTargetTeleOp(m_Drive, m_Shooter, m_Transition, m_DriverController));
 
-        m_OperatorController.a().whileTrue(m_Pivot.dumbIntakeOut());
+        m_OperatorController.a().whileTrue(m_Intake.dumbIntakeOut());
     }
 
     /**

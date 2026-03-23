@@ -7,59 +7,79 @@ package frc.robot.subsystems;
 import static edu.wpi.first.units.Units.RPM;
 
 import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.VectorKit.hardware.KrakenX60;
+import frc.VectorKit.hardware.KrakenX60.logType;
+import frc.VectorKit.hardware.RevThroughboreEncoder;
+import frc.VectorKit.hardware.RevThroughboreEncoder.EncoderMode;
+import frc.VectorKit.tuners.PidFfTuner;
 import frc.robot.Constants.IntakeConstants;
-import frc.robot.VectorKit.hardware.KrakenX60;
-import frc.robot.VectorKit.tuners.PidTuner;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Intake extends SubsystemBase {
-    /** Creates a new Intake. */
     private final KrakenX60 intakeMotor = new KrakenX60(IntakeConstants.WHEEL_MOTOR_ID);
+    private final KrakenX60 pivotMotor = new KrakenX60(IntakeConstants.PIVOT_MOTOR_ID);
 
-    // TODO: Tune and set defaults
-    private final PidTuner intakePidTuner = new PidTuner("/Intake/", 0.1, 0.02, 0.0, 0.0, 0.13);
+    private final RevThroughboreEncoder pivotEncoder =
+            new RevThroughboreEncoder(EncoderMode.ABSOLUTE, IntakeConstants.PIVOT_ENCODER_ID);
 
+    private final PidFfTuner intakePidTuner = new PidFfTuner("Intake", 0.1, 0.02, 0.0, 0.0, 0.13);
+
+    private final LoggedNetworkNumber manualRpm = new LoggedNetworkNumber("Intake/Target RPM", 3000.0);
+    private final LoggedNetworkNumber manualRevRpm = new LoggedNetworkNumber("Intake/Target Reverse RPM", 500.0);
+
+    /** Creates a new Intake. */
     public Intake() {
+        intakeMotor.setEnabledLoggers("Intake", logType.CURRENT, logType.VELOCITY);
         intakeMotor.setInverted(InvertedValue.Clockwise_Positive);
         intakeMotor.setStatorCurrentLimit(80);
+        intakeMotor.attachTuner(intakePidTuner);
+
+        pivotMotor.setEnabledLoggers("Intake", logType.CURRENT, logType.VELOCITY);
+        pivotMotor.setInverted(InvertedValue.Clockwise_Positive);
+        pivotMotor.setBrakeMode(NeutralModeValue.Coast);
+
+        pivotEncoder.setInverted(true);
     }
 
     public Command setIntakeVoltage(Supplier<Double> voltage) {
-        return runOnce(() -> {
-                    intakeMotor.setVoltage(voltage.get());
-                })
-                .handleInterrupt(() -> {
-                    intakeMotor.setVoltage(0.0);
-                });
+        return intakeMotor.setVoltage(voltage);
     }
 
     public Command setIntakeRPM(Supplier<Double> rpm) {
-        return run(() -> {
-                    intakeMotor.setVelocity(rpm.get() / IntakeConstants.INTAKE_GEAR_RATIO, RPM);
-                })
-                .handleInterrupt(() -> {
-                    intakeMotor.setVoltage(0.0);
-                });
+        return intakeMotor.setVelocity(() -> (rpm.get() / IntakeConstants.INTAKE_GEAR_RATIO), RPM);
+    }
+
+    public Command setIntakeRPMSafe(Supplier<Double> rpm) {
+        return intakeMotor
+                .setVelocity(() -> (rpm.get() / IntakeConstants.INTAKE_GEAR_RATIO), RPM)
+                .onlyWhile(() -> pivotEncoder.get() >= IntakeConstants.PIVOT_RUN_ANGLE);
     }
 
     public Command manualIntakeRPM(Supplier<Boolean> reverse) {
-        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 3000.0);
-        LoggedNetworkNumber revrpm = new LoggedNetworkNumber("/Intake/Target Reverse RPM", 500.0);
-        return setIntakeRPM(() -> (reverse.get() ? -revrpm.get() : rpm.get()));
+        return setIntakeRPM(() -> (reverse.get() ? -manualRevRpm.get() : manualRpm.get()));
+    }
+
+    public Command manualPivotVoltage(Supplier<Double> volts) {
+        return pivotMotor.setVoltage(volts);
+    }
+
+    public Command dumbIntakeOut() {
+        return pivotMotor.setVoltage(() -> 10.0).until(() -> pivotEncoder.get() >= IntakeConstants.PIVOT_OUT_ANGLE);
+    }
+
+    public Command holdIntakeOut() {
+        return pivotMotor.setVoltage(() -> 5.0).onlyWhile(() -> pivotEncoder.get() >= IntakeConstants.PIVOT_OUT_ANGLE);
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        if (intakePidTuner.updated()) intakeMotor.updateFromTuner(intakePidTuner);
-
-        Logger.recordOutput("Intake/Current RPM (Motor)", intakeMotor.getRPM());
-        Logger.recordOutput("Intake/Current RPM (Output)", intakeMotor.getRPM() * IntakeConstants.INTAKE_GEAR_RATIO);
-
-        intakeMotor.logCurrents("Intake");
+        Logger.recordOutput("Intake/Pivot/Current Angle", pivotEncoder.get());
+        Logger.recordOutput("Intake/Pivot/New Offset", (pivotEncoder.getRaw() * 360.0) - 5.0);
     }
 }

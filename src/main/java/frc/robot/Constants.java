@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
@@ -42,35 +43,26 @@ public final class Constants {
     public static class ControllerConstants {
         public static final int DRIVER_CONTROLLER_ID = 0;
         public static final int OPERATOR_CONTROLLER_ID = 1;
+
         public static final LinearVelocity MAX_DRIVE_SPEED = MetersPerSecond.of(3.25);
+        public static final AngularVelocity MAX_ROTATE_SPEED = DegreesPerSecond.of(360.0);
     }
 
     public static class ShooterConstants {
-        public static final int LEFT_MOTOR_ID = 41; // 61;
-        public static final int LEFT_MOTOR2_ID = 42;
-        public static final int RIGHT_MOTOR_ID = 43; // 62;
-        public static final int RIGHT_MOTOR2_ID = 44;
-
-        public static final int LEFT_LINEAR_ACTUATOR_ID = 0;
-        public static final int RIGHT_LINEAR_ACTUATOR_ID = 1;
-
-        public static final double LINEAR_ACTUATOR_MINIMUM = 0.65;
-        public static final double LINEAR_ACTUATOR_MAXIMUM = 1.0;
+        public static final int LEFT_SHOOTER_MOTOR_ID = 41;
+        public static final int LEFT_SHOOTER_MOTOR2_ID = 42;
+        public static final int RIGHT_SHOOTER_MOTOR_ID = 43;
+        public static final int RIGHT_SHOOTER_MOTOR2_ID = 44;
 
         public static final double SHOOTER_WHEEL_DIAMETER = Units.inchesToMeters(3.0);
         public static final double TIP_TO_RPM = 425.0;
         public static final double GRAVITATIONAL_CONSTANT = 9.8; // m/s
         public static final double INITIAL_HEIGHT = Units.inchesToMeters(18.33);
-        // public static final double LAUNCH_ANGLE = 0.93;
         public static final double LAUNCH_ANGLE = Units.degreesToRadians(90 - 35);
         public static final double LAUNCH_ANGLE_COS = 2 * Math.pow(Math.cos(LAUNCH_ANGLE), 2);
 
-        public static final double MAXIMUM_RPM = 4500.0;
-    }
-
-    public static class FullSendConstants {
-        public static final int MOTOR_ID = 60;
-        public static final double GEAR_RATIO = 1.0 / 4.0;
+        public static final int FULLSEND_MOTOR_ID = 60;
+        public static final double FULLSEND_GEAR_RATIO = 1.0 / 4.0;
     }
 
     public static class IntakeConstants {
@@ -83,19 +75,13 @@ public final class Constants {
         public static final double PIVOT_GEAR_RATIO = 1.0 / 25.0;
         public static final double INTAKE_GEAR_RATIO = 1.0 / 2.0;
 
-        public static final double PIVOT_ANGLE_TOLERANCE = 0.5;
-        public static final double PIVOT_IN_ANGLE = 1.5;
         public static final double PIVOT_OUT_ANGLE = 130.0;
         public static final double PIVOT_RUN_ANGLE = 110.0;
     }
 
     public static class TransitionConstants {
-        public static final int UPPER_LEFT_MOTOR_ID = 61; // 41;
-        public static final int UPPER_RIGHT_MOTOR_ID = 62; // 42;
-        public static final int LOWER_MOTOR_ID = 52;
-
-        public static final double UPPER_GEAR_RATIO = 1.0 / 3.0;
-        public static final double LOWER_GEAR_RATIO = 1.0 / 2.0;
+        public static final int MOTOR_ID = 52;
+        public static final double GEAR_RATIO = 1.0 / 2.0;
     }
 
     public static class VisionConstants {

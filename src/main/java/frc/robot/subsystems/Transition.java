@@ -10,66 +10,42 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.VectorKit.hardware.KrakenX60;
+import frc.VectorKit.hardware.KrakenX60.logType;
+import frc.VectorKit.tuners.PidFfTuner;
 import frc.robot.Constants.TransitionConstants;
 import java.util.function.Supplier;
-import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
 public class Transition extends SubsystemBase {
-    private final KrakenX60 lowerMotor = new KrakenX60(TransitionConstants.LOWER_MOTOR_ID);
+    private final KrakenX60 transitionMotor = new KrakenX60(TransitionConstants.MOTOR_ID);
 
-    private final PidFfTuner lowerTransitionPidTuner = new PidFfTuner("/Transition/Lower/", 0.1, 0.02, 0.0, 0.0, 0.14);
+    private final PidFfTuner lowerTransitionPidTuner = new PidFfTuner("Transition", 0.1, 0.02, 0.0, 0.0, 0.14);
+
+    private final LoggedNetworkNumber manualRpm = new LoggedNetworkNumber("Transition/Target RPM", 2000.0);
 
     /** Creates a new Transition. */
     public Transition() {
-        lowerMotor.setInverted(InvertedValue.Clockwise_Positive);
-        lowerMotor.setStatorCurrentLimit(60);
+        transitionMotor.setInverted(InvertedValue.Clockwise_Positive);
+        transitionMotor.setStatorCurrentLimit(60);
+
+        transitionMotor.attachTuner(lowerTransitionPidTuner);
+        transitionMotor.setEnabledLoggers("Transition", logType.CURRENT, logType.VELOCITY);
     }
 
-    public Command setLowerTransitionVoltage(Supplier<Double> voltage) {
-        return run(() -> {
-                    lowerMotor.setVoltage(voltage.get());
-                })
-                .handleInterrupt(() -> {
-                    lowerMotor.setVoltage(0.0);
-                });
+    public Command setTransitionVoltage(Supplier<Double> voltage) {
+        return transitionMotor.setVoltage(voltage);
     }
 
-    public Command setLowerTransitionRPM(Supplier<Double> rpm) {
-        return run(() -> {
-                    lowerMotor.setVelocity(rpm.get() / TransitionConstants.LOWER_GEAR_RATIO, RPM);
-                })
-                .handleInterrupt(() -> {
-                    lowerMotor.setVoltage(0.0);
-                });
+    public Command setTransitionRPM(Supplier<Double> rpm) {
+        return transitionMotor.setVelocity(() -> (rpm.get() / TransitionConstants.GEAR_RATIO), RPM);
     }
 
-    public Command manualLowerTransitionRPM(Supplier<Boolean> reverse) {
-        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Transition/Lower/Target RPM", 2000.0);
-        return setLowerTransitionRPM(() -> (reverse.get() ? -rpm.get() : rpm.get()));
+    public Command manualTransitionRPM(Supplier<Boolean> reverse) {
+        return setTransitionRPM(() -> (reverse.get() ? -manualRpm.get() : manualRpm.get()));
     }
 
     @Override
     public void periodic() {
         // This method will be called once per scheduler run
-        if (lowerTransitionPidTuner.updated()) lowerMotor.updateFromTuner(lowerTransitionPidTuner);
-        // if (upperTransitionPidTuner.updated()) upperLeftMotor.updateFromTuner(upperTransitionPidTuner);
-
-        Logger.recordOutput("Transition/Lower/Current RPM (Motor)", lowerMotor.getRPM());
-        // Logger.recordOutput("Transition/Upper/Current Left RPM (Motor)", upperLeftMotor.getRPM());
-        // Logger.recordOutput("Transition/Upper/Current Right RPM (Motor)", upperRightMotor.getRPM());
-
-        Logger.recordOutput(
-                "Transition/Lower/Current RPM (Output)", lowerMotor.getRPM() * TransitionConstants.LOWER_GEAR_RATIO);
-        // Logger.recordOutput(
-        //         "Transition/Upper/Current Left RPM (Output)",
-        //         upperLeftMotor.getRPM() * TransitionConstants.UPPER_GEAR_RATIO);
-        // Logger.recordOutput(
-        //         "Transition/Upper/Current Right RPM (Output)",
-        //         upperRightMotor.getRPM() * TransitionConstants.UPPER_GEAR_RATIO);
-
-        // upperLeftMotor.logCurrents("Transition/Upper/Left");
-        // upperRightMotor.logCurrents("Transition/Upper/Right");
-        lowerMotor.logCurrents("Transition/Lower");
     }
 }

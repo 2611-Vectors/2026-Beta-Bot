@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.RobotConstants;
-import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
 import frc.robot.subsystems.drive.Drive;
@@ -27,17 +26,10 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 // NOTE:  Consider using this command inline, rather than writing a subclass.  For more
 // information, see:
 // https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
-public class AutoTargetDriverControl extends SequentialCommandGroup {
+public class AutoTargetTeleOp extends SequentialCommandGroup {
     /** Creates a new AutoShooterDistance. */
-    public AutoTargetDriverControl(
-            Drive m_Drive,
-            Shooter m_Shooter,
-            FullSend m_FullSend,
-            Transition m_Transition,
-            CommandXboxController m_DriverController) {
-        // Add your commands in the addCommands() call, e.g.
-        // addCommands(new FooCommand(), new BarCommand());
-
+    public AutoTargetTeleOp(
+            Drive m_Drive, Shooter m_Shooter, Transition m_Transition, CommandXboxController m_DriverController) {
         LoggedNetworkNumber tip_to_rpm = new LoggedNetworkNumber("/Shooter/Tip To RPM", TIP_TO_RPM);
 
         Supplier<Double> shooterSpeed =
@@ -70,15 +62,14 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                         .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= RobotConstants.ROTATION_ERROR)),
                 new ParallelCommandGroup(
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
-                        DriveCommands.joystickDriveAtAngle(
+                        DriveCommands.joystickDrive(
                                 m_Drive,
                                 () -> -m_DriverController.getLeftY(),
                                 () -> -m_DriverController.getLeftX(),
-                                () -> targetAngle.get())));
-        // new ParallelCommandGroup(
-        //                 m_FullSend.manualFullSendRPM(() -> false),
-        //                 m_Transition.manualTransitionRPM(() -> false))
-        //         .onlyIf(() -> m_DriverController.rightTrigger().getAsBoolean())));
+                                () -> 0.0),
+                        new runTransition(m_Shooter, m_Transition)
+                                .onlyWhile(
+                                        () -> m_DriverController.rightTrigger().getAsBoolean())));
     }
 
     public static double flipAngle(double angle) {
