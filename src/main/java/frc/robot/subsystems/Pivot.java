@@ -28,7 +28,7 @@ public class Pivot extends SubsystemBase {
 
     public Pivot() {
         pivotEncoder.setInverted(true);
-        pivotMotor.setBrakeMode(NeutralModeValue.Coast);
+        pivotMotor.setBrakeMode(NeutralModeValue.Brake);
         pivotMotor.setInverted(InvertedValue.Clockwise_Positive);
     }
 
@@ -77,7 +77,7 @@ public class Pivot extends SubsystemBase {
     public void periodic() {
         // This method will be called once per scheduler run
         Logger.recordOutput("Intake/Pivot/Current Angle", pivotEncoder.get());
-        Logger.recordOutput("Intake/Pivot/New Offset", (pivotEncoder.getRaw() * 360.0) - 0.5);
+        Logger.recordOutput("Intake/Pivot/New Offset", (pivotEncoder.getRaw() * 360.0) - 8.0);
         pivotController.update();
         Logger.recordOutput(
                 "Intake/Pivot/Current RPM (Output)", pivotMotor.getRPM() / IntakeConstants.PIVOT_GEAR_RATIO);

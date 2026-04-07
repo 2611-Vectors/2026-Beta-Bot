@@ -21,7 +21,7 @@ public class Intake extends SubsystemBase {
     private final KrakenX60 intakeMotor = new KrakenX60(IntakeConstants.WHEEL_MOTOR_ID);
 
     // TODO: Tune and set defaults
-    private final PidTuner intakePidTuner = new PidTuner("/Intake/", 0.1, 0.02, 0.0, 0.0, 0.13);
+    private final PidTuner intakePidTuner = new PidTuner("/Intake/", 0.1, 0.0, 0.0, 0.0, 0.13);
 
     public Intake() {
         intakeMotor.setInverted(InvertedValue.Clockwise_Positive);
@@ -47,7 +47,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command manualIntakeRPM(Supplier<Boolean> reverse) {
-        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 3000.0);
+        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 2500.0);
         LoggedNetworkNumber revrpm = new LoggedNetworkNumber("/Intake/Target Reverse RPM", 500.0);
         return setIntakeRPM(() -> (reverse.get() ? -revrpm.get() : rpm.get()));
     }

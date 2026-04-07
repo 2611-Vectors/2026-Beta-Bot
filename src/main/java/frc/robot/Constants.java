@@ -15,6 +15,7 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.generated.TunerConstants;
@@ -42,7 +43,8 @@ public final class Constants {
     public static class ControllerConstants {
         public static final int DRIVER_CONTROLLER_ID = 0;
         public static final int OPERATOR_CONTROLLER_ID = 1;
-        public static final LinearVelocity MAX_DRIVE_SPEED = MetersPerSecond.of(3.25);
+        public static final LinearVelocity MAX_DRIVE_SPEED = MetersPerSecond.of(1.75);
+        public static final AngularVelocity MAX_TURN_SPEED = DegreesPerSecond.of(270.0);
     }
 
     public static class ShooterConstants {
@@ -78,7 +80,7 @@ public final class Constants {
         public static final int WHEEL_MOTOR_ID = 31;
 
         public static final int PIVOT_ENCODER_ID = 1;
-        public static final double PIVOT_ENCODER_OFFSET = 225;
+        public static final double PIVOT_ENCODER_OFFSET = 115.0;
 
         public static final double PIVOT_GEAR_RATIO = 1.0 / 25.0;
         public static final double INTAKE_GEAR_RATIO = 1.0 / 2.0;
@@ -124,7 +126,7 @@ public final class Constants {
                 new Rotation3d(Math.toRadians(-2), Math.toRadians(-10), Math.toRadians(180.985)));
 
         // Name of PhotonVision Camera
-        public static final String LeftFrontCam = "Camera5";
+        public static final String LeftFrontCam = "FrontLeft";
 
         // Position of PhotonVision Camera
         public static final Transform3d robotToLeftFrontCam = new Transform3d(

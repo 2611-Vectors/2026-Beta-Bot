@@ -75,13 +75,13 @@ public class DriveCommands {
                     double omega = MathUtil.applyDeadband(omegaSupplier.getAsDouble(), DEADBAND);
 
                     // Square rotation value for more precise control
-                    omega = Math.copySign(Math.pow(omega, 3) * 0.75, omega);
+                    omega = Math.copySign(Math.pow(omega, 3), omega);
 
                     // Convert to field relative speeds & send command
                     ChassisSpeeds speeds = new ChassisSpeeds(
                             linearVelocity.getX() * ControllerConstants.MAX_DRIVE_SPEED.in(MetersPerSecond),
                             linearVelocity.getY() * ControllerConstants.MAX_DRIVE_SPEED.in(MetersPerSecond),
-                            omega * drive.getMaxAngularSpeedRadPerSec());
+                            omega * ControllerConstants.MAX_TURN_SPEED.in(RadiansPerSecond));
                     boolean isFlipped = DriverStation.getAlliance().isPresent()
                             && DriverStation.getAlliance().get() == Alliance.Red;
                     drive.runVelocity(ChassisSpeeds.fromFieldRelativeSpeeds(
@@ -118,8 +118,8 @@ public class DriveCommands {
 
                             // Convert to field relative speeds & send command
                             ChassisSpeeds speeds = new ChassisSpeeds(
-                                    linearVelocity.getX() * drive.getMaxLinearSpeedMetersPerSec(),
-                                    linearVelocity.getY() * drive.getMaxLinearSpeedMetersPerSec(),
+                                    linearVelocity.getX() * ControllerConstants.MAX_DRIVE_SPEED.in(MetersPerSecond),
+                                    linearVelocity.getY() * ControllerConstants.MAX_DRIVE_SPEED.in(MetersPerSecond),
                                     omega);
                             boolean isFlipped = DriverStation.getAlliance().isPresent()
                                     && DriverStation.getAlliance().get() == Alliance.Red;

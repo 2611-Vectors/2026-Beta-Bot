@@ -143,7 +143,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
         NamedCommands.registerCommand("runTransition", m_Transition.setLowerTransitionRPM(() -> 1000.0));
         NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
-        NamedCommands.registerCommand("intakeOut", m_Pivot.dumbIntakeOut());
+
+        // TODO: DONT RUN INTAKE PIVOT DURING TESTING!!!
+        // NamedCommands.registerCommand("intakeOut", m_Pivot.dumbIntakeOut());
+        NamedCommands.registerCommand("intakeOut", Commands.run(() -> {}));
 
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -180,14 +183,23 @@ public class RobotContainer {
                 () -> -m_DriverController.getLeftX(),
                 () -> -m_DriverController.getRightX()));
 
-        // Lock to 0° when A button is held
+        // Lock to -25° when the A button is held
         m_DriverController
                 .a()
                 .whileTrue(DriveCommands.joystickDriveAtAngle(
                         m_Drive,
                         () -> -m_DriverController.getLeftY(),
                         () -> -m_DriverController.getLeftX(),
-                        () -> Rotation2d.kZero));
+                        () -> new Rotation2d(Math.toRadians(-25))));
+
+        // Lock to 25° when the B button is held
+        m_DriverController
+                .b()
+                .whileTrue(DriveCommands.joystickDriveAtAngle(
+                        m_Drive,
+                        () -> -m_DriverController.getLeftY(),
+                        () -> -m_DriverController.getLeftX(),
+                        () -> new Rotation2d(Math.toRadians(25))));
 
         // Switch to X pattern when X button is pressed
         m_DriverController.x().onTrue(Commands.runOnce(m_Drive::stopWithX, m_Drive));
@@ -223,7 +235,8 @@ public class RobotContainer {
                 .toggleOnTrue(
                         new AutoTargetDriverControl(m_Drive, m_Shooter, m_FullSend, m_Transition, m_DriverController));
 
-        m_OperatorController.a().whileTrue(m_Pivot.dumbIntakeOut());
+        // TODO: DONT RUN INTAKE PIVOT DURING TESTING!!!
+        // m_OperatorController.a().whileTrue(m_Pivot.dumbIntakeOut());
     }
 
     /**
