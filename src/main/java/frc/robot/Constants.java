@@ -104,8 +104,7 @@ public final class Constants {
     public static class VisionConstants {
         // Apriltag Field Layout
 
-        public static AprilTagFieldLayout aprilTagLayout =
-                AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
+        public static AprilTagFieldLayout aprilTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
         public static final double FIELD_WIDTH = aprilTagLayout.getFieldLength();
         public static final double FIELD_HEIGHT = aprilTagLayout.getFieldWidth();
@@ -195,10 +194,11 @@ public final class Constants {
         public static final double PATHFIND_ANGULAR_VEL = 90.0;
         public static final double PATHFIND_ANGULAR_ACCEL = 720.0;
 
-        public static final Translation2d RIGHT_BUMP_POS = new Translation2d(5.5, 2.7);
+        public static final Translation2d RIGHT_BUMP_POS = new Translation2d(5.75, 2.7);
         public static final Translation2d RIGHT_AFTER_BUMP_POS = new Translation2d(3.8, 2.5);
         public static final Translation2d RIGHT_SHOOT_POS = new Translation2d(3.0, 2.0);
 
         public static final double VEL_OVER_BUMP = 2.0;
+        public static final double BUMP_ROTATION = 45.0;
     }
 }

@@ -71,9 +71,9 @@ public class AutoMath {
 
     /**
      * Flips point from red to blue (vice versa) to match your alliance side
-     * 
+     *
      * @param point {@code Pose2d} of the point you wish to flip
-     * 
+     *
      * @return The adjusted point as a {@code Pose2d}
      */
     public static Pose2d flipRed(Pose2d point) {
@@ -89,9 +89,9 @@ public class AutoMath {
 
     /**
      * Reflects a given angle in Degrees
-     * 
+     *
      * @param angle {@code double} of the angle you wish to reflect in Degrees
-     * 
+     *
      * @return {@code double} of the reflected angle in Degrees
      */
     public static double flipAngle(double angle) {
@@ -104,10 +104,10 @@ public class AutoMath {
 
     /**
      * Flips point from left to right (vice versa) to match the robot side
-     * 
+     *
      * @param botPose {@code Pose2d} of the current robot pose
      * @param point {@code Pose2d} of the point you wish to flip
-     * 
+     *
      * @return The adjusted point as a {@code Pose2d}
      */
     public static Pose2d flipLR(Pose2d botPose, Pose2d point) {
@@ -117,12 +117,12 @@ public class AutoMath {
 
     /**
      * Checks if a point is on the left side of the field
-     * 
+     *
      * @param point {@code Pose2d} of the point you wish to check
-     * 
+     *
      * @return {@code boolean} true if left; false if right
      */
     public static boolean onLeftSide(Pose2d point) {
-        return (point.getY() < (FIELD_WIDTH/2));
+        return (point.getY() < (FIELD_WIDTH / 2));
     }
 }

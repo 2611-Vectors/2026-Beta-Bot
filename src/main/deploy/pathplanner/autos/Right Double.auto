@@ -23,6 +23,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "crossBumpToShoot"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -45,6 +51,12 @@
           "type": "path",
           "data": {
             "pathName": "EXP Right 3"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "crossBumpToShoot"
           }
         },
         {

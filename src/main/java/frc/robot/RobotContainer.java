@@ -26,6 +26,7 @@ import frc.robot.VectorKit.vision.VisionIOPhotonVision;
 import frc.robot.VectorKit.vision.VisionIOPhotonVisionSim;
 import frc.robot.commands.AutoTarget;
 import frc.robot.commands.AutoTargetDriverControl;
+import frc.robot.commands.CrossBumpToShoot;
 import frc.robot.commands.DriveCommands;
 import frc.robot.commands.PathfindToStart;
 import frc.robot.generated.TunerConstants;
@@ -138,6 +139,7 @@ public class RobotContainer {
         }
 
         NamedCommands.registerCommand("autoTarget", new AutoTarget(m_Drive, m_Shooter, m_FullSend, m_Transition));
+        NamedCommands.registerCommand("crossBumpToShoot", new CrossBumpToShoot(m_Drive));
         NamedCommands.registerCommand(
                 "runIntake", m_Intake.setIntakeRPM(() -> 3000.0).onlyWhile(() -> m_Pivot.intakeCanRun()));
         NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
