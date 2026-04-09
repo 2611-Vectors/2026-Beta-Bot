@@ -5,6 +5,12 @@
     "data": {
       "commands": [
         {
+          "type": "named",
+          "data": {
+            "name": "intakeOut"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "EXP Right 1"
