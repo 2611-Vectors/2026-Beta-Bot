@@ -50,7 +50,7 @@ public class AutoMath {
         double time = dist / (speed * Math.cos(LAUNCH_ANGLE));
 
         Pose2d rotVector = new Pose2d(dist, 0, new Rotation2d());
-        rotVector.rotateAround(new Translation2d(0, 0), new Rotation2d(-speeds.omegaRadiansPerSecond * time));
+        rotVector.rotateAround(new Translation2d(0, 0), new Rotation2d(speeds.omegaRadiansPerSecond * time));
 
         Pose3d out = new Pose3d(
                 target.getX() + Math.abs(speeds.vxMetersPerSecond * time) + rotVector.getX(),
