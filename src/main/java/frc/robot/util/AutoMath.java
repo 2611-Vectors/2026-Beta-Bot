@@ -81,6 +81,14 @@ public class AutoMath {
         return point;
     }
 
+    public static Rotation2d flipRed(Rotation2d angle) {
+        if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red)
+            angle = (
+                    Rotation2d.fromDegrees(flipAngle(angle.getDegrees())));
+
+        return angle;
+    }
+
     public static double flipAngle(double angle) {
         double reflectedAngle = -180 - angle;
         if (reflectedAngle < -180) {

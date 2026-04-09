@@ -40,6 +40,8 @@ import frc.robot.subsystems.drive.GyroIOPigeon2;
 import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
+import frc.robot.util.AutoMath;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -187,7 +189,7 @@ public class RobotContainer {
                         m_Drive,
                         () -> -m_DriverController.getLeftY(),
                         () -> -m_DriverController.getLeftX(),
-                        () -> new Rotation2d(Math.toRadians(-25))));
+                        () -> AutoMath.flipRed(new Rotation2d(Math.toRadians(-25)))));
 
         // Lock to 25° when the B button is held
         m_DriverController
@@ -196,7 +198,7 @@ public class RobotContainer {
                         m_Drive,
                         () -> -m_DriverController.getLeftY(),
                         () -> -m_DriverController.getLeftX(),
-                        () -> new Rotation2d(Math.toRadians(25))));
+                        () -> AutoMath.flipRed(new Rotation2d(Math.toRadians(25)))));
 
         // Switch to X pattern when X button is pressed
         m_DriverController.x().onTrue(Commands.runOnce(m_Drive::stopWithX, m_Drive));
