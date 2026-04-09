@@ -96,7 +96,12 @@ public class DriveCommands {
     public static Command joystickDriveAtAngle(
             Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Supplier<Rotation2d> rotationSupplier) {
         return joystickDriveAtAngleWithSpeed(
-                drive, xSupplier, ySupplier, rotationSupplier, ControllerConstants.MAX_DRIVE_SPEED, ControllerConstants.MAX_TURN_SPEED);
+                drive,
+                xSupplier,
+                ySupplier,
+                rotationSupplier,
+                ControllerConstants.MAX_DRIVE_SPEED,
+                ControllerConstants.MAX_TURN_SPEED);
     }
 
     /**
@@ -146,7 +151,8 @@ public class DriveCommands {
 
                 // Reset PID controller when command starts
                 .beforeStarting(() -> {
-                    angleController.setConstraints(new TrapezoidProfile.Constraints(maxAngularVelocity.in(RadiansPerSecond), ANGLE_MAX_ACCELERATION));
+                    angleController.setConstraints(new TrapezoidProfile.Constraints(
+                            maxAngularVelocity.in(RadiansPerSecond), ANGLE_MAX_ACCELERATION));
                     angleController.reset(drive.getRotation().getRadians());
                 });
     }

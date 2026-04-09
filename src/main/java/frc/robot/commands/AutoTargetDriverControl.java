@@ -4,12 +4,9 @@
 
 package frc.robot.commands;
 
-import static frc.robot.Constants.ControllerConstants.MAX_DRIVE_TARGETING_SPEED;
-import static frc.robot.Constants.ControllerConstants.MAX_TURN_TARGETING_SPEED;
 import static frc.robot.Constants.FieldConstants.HUB_POSITION;
 import static frc.robot.Constants.ShooterConstants.TIP_TO_RPM;
 
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -37,12 +34,10 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
 
         LoggedNetworkNumber tip_to_rpm = new LoggedNetworkNumber("/Shooter/Tip To RPM", TIP_TO_RPM);
 
-        Supplier<Pose3d> translatedTarget = () -> AutoMath.translateTargetByChassisSpeeds(m_Drive.getPose(), HUB_POSITION, m_Drive.getChassisSpeeds());
-
         Supplier<Double> shooterSpeed =
-                () -> tip_to_rpm.get() * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), translatedTarget.get());
+                () -> tip_to_rpm.get() * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
         Supplier<Rotation2d> targetAngle =
-                () -> AutoMath.getRobotAngleToTarget(m_Drive.getPose(), translatedTarget.get().toPose2d());
+                () -> AutoMath.getRobotAngleToTarget(m_Drive.getPose(), HUB_POSITION.toPose2d());
         Supplier<Double> correctedRobotAngle = () -> (Math.abs(
                 m_Drive.getRotation().getDegrees() > 0
                         ? Math.abs(m_Drive.getRotation().getDegrees() - 180.0)
@@ -60,7 +55,7 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                                         m_Drive,
                                         () -> -m_DriverController.getLeftY(),
                                         () -> -m_DriverController.getLeftX(),
-                                        targetAngle),
+                                        () -> targetAngle.get()),
                                 Commands.run(() -> {
                                     Logger.recordOutput("Targeting/Robot Angle", correctedRobotAngle.get());
                                     Logger.recordOutput("Targeting/Target Angle", correctedTargetAngle.get());
@@ -69,16 +64,15 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                         .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= RobotConstants.ROTATION_ERROR)),
                 new ParallelCommandGroup(
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
-                        DriveCommands.joystickDriveAtAngleWithSpeed(
+                        DriveCommands.joystickDriveAtAngle(
                                 m_Drive,
                                 () -> -m_DriverController.getLeftY(),
                                 () -> -m_DriverController.getLeftX(),
-                                targetAngle,
-                                MAX_DRIVE_TARGETING_SPEED,
-                                MAX_TURN_TARGETING_SPEED),
+                                () -> targetAngle.get()),
                         new ParallelCommandGroup(
                                         m_FullSend.manualFullSendRPM(() -> false),
                                         m_Transition.manualLowerTransitionRPM(() -> false))
-                                .onlyWhile(() -> m_DriverController.rightTrigger().getAsBoolean())));
+                                .onlyWhile(
+                                        () -> m_DriverController.rightTrigger().getAsBoolean())));
     }
 }
