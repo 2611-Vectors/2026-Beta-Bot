@@ -14,6 +14,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
@@ -104,10 +105,10 @@ public final class Constants {
         // Apriltag Field Layout
 
         public static AprilTagFieldLayout aprilTagLayout =
-                AprilTagFieldLayout.loadField(AprilTagFields.k2026RebuiltWelded);
+                AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
 
-        public static final double FIELD_WIDTH = 16.541;
-        public static final double FIELD_HEIGHT = 8.069;
+        public static final double FIELD_WIDTH = aprilTagLayout.getFieldLength();
+        public static final double FIELD_HEIGHT = aprilTagLayout.getFieldWidth();
 
         public static final Transform3d groundToRobotTopPlate = new Transform3d(
                 Units.inchesToMeters(0),
@@ -188,5 +189,16 @@ public final class Constants {
         public static final double ROBOT_MOI = 5.5;
         public static final double WHEEL_COF_FRICTION = 2.255;
         public static final double ROTATION_ERROR = 2.0;
+
+        public static final double PATHFIND_VEL = 3.0;
+        public static final double PATHFIND_ACCEL = 2.5;
+        public static final double PATHFIND_ANGULAR_VEL = 90.0;
+        public static final double PATHFIND_ANGULAR_ACCEL = 720.0;
+
+        public static final Translation2d RIGHT_BUMP_POS = new Translation2d(5.5, 2.7);
+        public static final Translation2d RIGHT_AFTER_BUMP_POS = new Translation2d(3.8, 2.5);
+        public static final Translation2d RIGHT_SHOOT_POS = new Translation2d(3.0, 2.0);
+
+        public static final double VEL_OVER_BUMP = 2.0;
     }
 }

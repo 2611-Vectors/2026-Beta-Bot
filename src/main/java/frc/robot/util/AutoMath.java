@@ -18,7 +18,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.robot.commands.PathfindToStart;
 import org.littletonrobotics.junction.Logger;
 
 /** Add your docs here. */
@@ -35,7 +34,7 @@ public class AutoMath {
     }
 
     public static double getDistanceToTarget(Pose2d robotPose, Pose2d target) {
-        robotPose = PathfindToStart.flipRed(robotPose);
+        robotPose = flipRed(robotPose);
         double a = robotPose.getX() - target.getX();
         double b = robotPose.getY() - target.getY();
         double c = Math.sqrt((a * a) + (b * b));
@@ -70,6 +69,13 @@ public class AutoMath {
                 / (LAUNCH_ANGLE_COS * (Math.tan(LAUNCH_ANGLE) * dist - heightDiff)));
     }
 
+    /**
+     * Flips point from red to blue (vice versa) to match your alliance side
+     * 
+     * @param point {@code Pose2d} of the point you wish to flip
+     * 
+     * @return The adjusted point as a {@code Pose2d}
+     */
     public static Pose2d flipRed(Pose2d point) {
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
             point = (new Pose2d(
@@ -81,11 +87,42 @@ public class AutoMath {
         return point;
     }
 
+    /**
+     * Reflects a given angle in Degrees
+     * 
+     * @param angle {@code double} of the angle you wish to reflect in Degrees
+     * 
+     * @return {@code double} of the reflected angle in Degrees
+     */
     public static double flipAngle(double angle) {
         double reflectedAngle = -180 - angle;
         if (reflectedAngle < -180) {
             return reflectedAngle + 360;
         }
         return reflectedAngle;
+    }
+
+    /**
+     * Flips point from left to right (vice versa) to match the robot side
+     * 
+     * @param botPose {@code Pose2d} of the current robot pose
+     * @param point {@code Pose2d} of the point you wish to flip
+     * 
+     * @return The adjusted point as a {@code Pose2d}
+     */
+    public static Pose2d flipLR(Pose2d botPose, Pose2d point) {
+        if (!onLeftSide(botPose)) return new Pose2d(point.getX(), FIELD_WIDTH - point.getY(), point.getRotation());
+        return point;
+    }
+
+    /**
+     * Checks if a point is on the left side of the field
+     * 
+     * @param point {@code Pose2d} of the point you wish to check
+     * 
+     * @return {@code boolean} true if left; false if right
+     */
+    public static boolean onLeftSide(Pose2d point) {
+        return (point.getY() < (FIELD_WIDTH/2));
     }
 }
