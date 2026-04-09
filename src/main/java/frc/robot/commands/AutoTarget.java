@@ -41,7 +41,7 @@ public class AutoTarget extends SequentialCommandGroup {
                         : Math.abs(m_Drive.getRotation().getDegrees() + 180.0)));
         Supplier<Double> correctedTargetAngle = () -> Math.abs(
                 DriverStation.getAlliance().orElse(Alliance.Blue) != Alliance.Red
-                        ? flipAngle(targetAngle.get().getDegrees())
+                        ? AutoMath.flipAngle(targetAngle.get().getDegrees())
                         : targetAngle.get().getDegrees());
         Supplier<Double> angleError = () -> correctedTargetAngle.get() - correctedRobotAngle.get();
 
@@ -61,13 +61,5 @@ public class AutoTarget extends SequentialCommandGroup {
                         DriveCommands.joystickDriveAtAngle(m_Drive, () -> 0.0, () -> 0.0, () -> targetAngle.get()),
                         m_FullSend.setFullSendRPM(() -> 5000.0),
                         m_Transition.setLowerTransitionRPM(() -> 2000.0)));
-    }
-
-    public static double flipAngle(double angle) {
-        double reflectedAngle = -180 - angle;
-        if (reflectedAngle < -180) {
-            return reflectedAngle + 360;
-        }
-        return reflectedAngle;
     }
 }

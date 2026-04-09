@@ -19,6 +19,8 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.measure.AngularVelocity;
+import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Timer;
@@ -91,13 +93,24 @@ public class DriveCommands {
                 drive);
     }
 
+    public static Command joystickDriveAtAngle(
+            Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Supplier<Rotation2d> rotationSupplier) {
+        return joystickDriveAtAngleWithSpeed(
+                drive, xSupplier, ySupplier, rotationSupplier, ControllerConstants.MAX_DRIVE_SPEED, ControllerConstants.MAX_TURN_SPEED);
+    }
+
     /**
      * Field relative drive command using joystick for linear control and PID for angular control.
      * Possible use cases include snapping to an angle, aiming at a vision target, or controlling
      * absolute rotation with a joystick.
      */
-    public static Command joystickDriveAtAngle(
-            Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Supplier<Rotation2d> rotationSupplier) {
+    public static Command joystickDriveAtAngleWithSpeed(
+            Drive drive,
+            DoubleSupplier xSupplier,
+            DoubleSupplier ySupplier,
+            Supplier<Rotation2d> rotationSupplier,
+            LinearVelocity maxVelocity,
+            AngularVelocity maxAngularVelocity) {
 
         // Create PID controller
         ProfiledPIDController angleController = new ProfiledPIDController(
@@ -118,8 +131,8 @@ public class DriveCommands {
 
                             // Convert to field relative speeds & send command
                             ChassisSpeeds speeds = new ChassisSpeeds(
-                                    linearVelocity.getX() * ControllerConstants.MAX_DRIVE_SPEED.in(MetersPerSecond),
-                                    linearVelocity.getY() * ControllerConstants.MAX_DRIVE_SPEED.in(MetersPerSecond),
+                                    linearVelocity.getX() * maxVelocity.in(MetersPerSecond),
+                                    linearVelocity.getY() * maxVelocity.in(MetersPerSecond),
                                     omega);
                             boolean isFlipped = DriverStation.getAlliance().isPresent()
                                     && DriverStation.getAlliance().get() == Alliance.Red;
@@ -132,7 +145,10 @@ public class DriveCommands {
                         drive)
 
                 // Reset PID controller when command starts
-                .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
+                .beforeStarting(() -> {
+                    angleController.setConstraints(new TrapezoidProfile.Constraints(maxAngularVelocity.in(RadiansPerSecond), ANGLE_MAX_ACCELERATION));
+                    angleController.reset(drive.getRotation().getRadians());
+                });
     }
 
     /**

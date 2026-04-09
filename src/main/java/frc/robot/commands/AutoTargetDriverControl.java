@@ -4,9 +4,12 @@
 
 package frc.robot.commands;
 
+import static frc.robot.Constants.ControllerConstants.MAX_DRIVE_TARGETING_SPEED;
+import static frc.robot.Constants.ControllerConstants.MAX_TURN_TARGETING_SPEED;
 import static frc.robot.Constants.FieldConstants.HUB_POSITION;
 import static frc.robot.Constants.ShooterConstants.TIP_TO_RPM;
 
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -24,33 +27,29 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoTargetDriverControl extends SequentialCommandGroup {
-    /** Creates a new AutoShooterDistance. */
     public AutoTargetDriverControl(
             Drive m_Drive,
             Shooter m_Shooter,
             FullSend m_FullSend,
             Transition m_Transition,
             CommandXboxController m_DriverController) {
-        // Add your commands in the addCommands() call, e.g.
-        // addCommands(new FooCommand(), new BarCommand());
 
         LoggedNetworkNumber tip_to_rpm = new LoggedNetworkNumber("/Shooter/Tip To RPM", TIP_TO_RPM);
 
+        Supplier<Pose3d> translatedTarget = () -> AutoMath.translateTargetByChassisSpeeds(m_Drive.getPose(), HUB_POSITION, m_Drive.getChassisSpeeds());
+
         Supplier<Double> shooterSpeed =
-                () -> tip_to_rpm.get() * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), HUB_POSITION);
+                () -> tip_to_rpm.get() * AutoMath.getFuelSpeedToTarget(m_Drive.getPose(), translatedTarget.get());
         Supplier<Rotation2d> targetAngle =
-                () -> AutoMath.getRobotAngleToTarget(m_Drive.getPose(), HUB_POSITION.toPose2d());
+                () -> AutoMath.getRobotAngleToTarget(m_Drive.getPose(), translatedTarget.get().toPose2d());
         Supplier<Double> correctedRobotAngle = () -> (Math.abs(
                 m_Drive.getRotation().getDegrees() > 0
                         ? Math.abs(m_Drive.getRotation().getDegrees() - 180.0)
                         : Math.abs(m_Drive.getRotation().getDegrees() + 180.0)));
         Supplier<Double> correctedTargetAngle = () -> Math.abs(
                 DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red
-                        ? flipAngle(targetAngle.get().getDegrees())
+                        ? AutoMath.flipAngle(targetAngle.get().getDegrees())
                         : targetAngle.get().getDegrees());
         Supplier<Double> angleError = () -> correctedTargetAngle.get() - correctedRobotAngle.get();
 
@@ -61,7 +60,7 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                                         m_Drive,
                                         () -> -m_DriverController.getLeftY(),
                                         () -> -m_DriverController.getLeftX(),
-                                        () -> targetAngle.get()),
+                                        targetAngle),
                                 Commands.run(() -> {
                                     Logger.recordOutput("Targeting/Robot Angle", correctedRobotAngle.get());
                                     Logger.recordOutput("Targeting/Target Angle", correctedTargetAngle.get());
@@ -70,22 +69,16 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                         .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= RobotConstants.ROTATION_ERROR)),
                 new ParallelCommandGroup(
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
-                        DriveCommands.joystickDriveAtAngle(
+                        DriveCommands.joystickDriveAtAngleWithSpeed(
                                 m_Drive,
                                 () -> -m_DriverController.getLeftY(),
                                 () -> -m_DriverController.getLeftX(),
-                                () -> targetAngle.get())));
-        // new ParallelCommandGroup(
-        //                 m_FullSend.manualFullSendRPM(() -> false),
-        //                 m_Transition.manualTransitionRPM(() -> false))
-        //         .onlyIf(() -> m_DriverController.rightTrigger().getAsBoolean())));
-    }
-
-    public static double flipAngle(double angle) {
-        double reflectedAngle = -180 - angle;
-        if (reflectedAngle < -180) {
-            return reflectedAngle + 360;
-        }
-        return reflectedAngle;
+                                targetAngle,
+                                MAX_DRIVE_TARGETING_SPEED,
+                                MAX_TURN_TARGETING_SPEED),
+                        new ParallelCommandGroup(
+                                        m_FullSend.manualFullSendRPM(() -> false),
+                                        m_Transition.manualLowerTransitionRPM(() -> false))
+                                .onlyWhile(() -> m_DriverController.rightTrigger().getAsBoolean())));
     }
 }
