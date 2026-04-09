@@ -143,7 +143,10 @@ public class RobotContainer {
         NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
         NamedCommands.registerCommand("runTransition", m_Transition.setLowerTransitionRPM(() -> 1000.0));
         NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
-        NamedCommands.registerCommand("intakeOut", m_Pivot.dumbIntakeOut());
+
+        // TODO: DONT RUN INTAKE PIVOT DURING TESTING!!!
+        // NamedCommands.registerCommand("intakeOut", m_Pivot.dumbIntakeOut());
+        NamedCommands.registerCommand("intakeOut", Commands.run(() -> {}));
 
         // Set up auto routines
         autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
@@ -224,6 +227,7 @@ public class RobotContainer {
                 .whileTrue(new ParallelCommandGroup(
                         m_FullSend.manualFullSendRPM(() -> true), m_Transition.manualLowerTransitionRPM(() -> true)));
 
+        // m_DriverController.leftTrigger().toggleOnTrue(m_Shooter.setShooterRPM(() -> 3050.0));
         m_DriverController.leftTrigger().toggleOnTrue(m_Shooter.manualShooterRPM());
 
         m_DriverController
@@ -231,7 +235,8 @@ public class RobotContainer {
                 .toggleOnTrue(
                         new AutoTargetDriverControl(m_Drive, m_Shooter, m_FullSend, m_Transition, m_DriverController));
 
-        m_OperatorController.a().whileTrue(m_Pivot.dumbIntakeOut());
+        // TODO: DONT RUN INTAKE PIVOT DURING TESTING!!!
+        // m_OperatorController.a().whileTrue(m_Pivot.dumbIntakeOut());
     }
 
     /**

@@ -43,7 +43,7 @@ public final class Constants {
     public static class ControllerConstants {
         public static final int DRIVER_CONTROLLER_ID = 0;
         public static final int OPERATOR_CONTROLLER_ID = 1;
-        public static final LinearVelocity MAX_DRIVE_SPEED = MetersPerSecond.of(3.25);
+        public static final LinearVelocity MAX_DRIVE_SPEED = MetersPerSecond.of(1.75);
         public static final AngularVelocity MAX_TURN_SPEED = DegreesPerSecond.of(270.0);
 
         public static final LinearVelocity MAX_DRIVE_TARGETING_SPEED = MetersPerSecond.of(1.0);
@@ -83,7 +83,7 @@ public final class Constants {
         public static final int WHEEL_MOTOR_ID = 31;
 
         public static final int PIVOT_ENCODER_ID = 1;
-        public static final double PIVOT_ENCODER_OFFSET = 171.0;
+        public static final double PIVOT_ENCODER_OFFSET = 115.0;
 
         public static final double PIVOT_GEAR_RATIO = 1.0 / 25.0;
         public static final double INTAKE_GEAR_RATIO = 1.0 / 2.0;
