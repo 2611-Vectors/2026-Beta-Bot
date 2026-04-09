@@ -4,6 +4,7 @@
 
 package frc.robot.commands;
 
+import static frc.robot.Constants.ControllerConstants.MAX_DRIVE_TARGETING_SPEED;
 import static frc.robot.Constants.FieldConstants.HUB_POSITION;
 import static frc.robot.Constants.ShooterConstants.TIP_TO_RPM;
 
@@ -64,15 +65,21 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                         .until(() -> (m_Shooter.isAtSpeed() && angleError.get() <= RobotConstants.ROTATION_ERROR)),
                 new ParallelCommandGroup(
                         m_Shooter.setShooterRPM(() -> shooterSpeed.get()),
-                        DriveCommands.joystickDriveAtAngle(
+                        DriveCommands.joystickDriveAtAngleWithSpeed(
                                 m_Drive,
                                 () -> -m_DriverController.getLeftY(),
                                 () -> -m_DriverController.getLeftX(),
-                                () -> targetAngle.get()),
+                                () -> targetAngle.get(),
+                                MAX_DRIVE_TARGETING_SPEED),
                         new ParallelCommandGroup(
                                         m_FullSend.manualFullSendRPM(() -> false),
                                         m_Transition.manualLowerTransitionRPM(() -> false))
                                 .onlyWhile(
-                                        () -> m_DriverController.rightTrigger().getAsBoolean())));
+                                        () -> m_DriverController.rightTrigger().getAsBoolean()),
+                        new ParallelCommandGroup(
+                                        m_FullSend.manualFullSendRPM(() -> true),
+                                        m_Transition.manualLowerTransitionRPM(() -> true))
+                                .onlyWhile(
+                                        () -> m_DriverController.rightBumper().getAsBoolean())));
     }
 }

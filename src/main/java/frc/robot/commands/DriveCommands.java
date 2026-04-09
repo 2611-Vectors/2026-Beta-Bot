@@ -19,7 +19,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.units.measure.LinearVelocity;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -96,12 +95,7 @@ public class DriveCommands {
     public static Command joystickDriveAtAngle(
             Drive drive, DoubleSupplier xSupplier, DoubleSupplier ySupplier, Supplier<Rotation2d> rotationSupplier) {
         return joystickDriveAtAngleWithSpeed(
-                drive,
-                xSupplier,
-                ySupplier,
-                rotationSupplier,
-                ControllerConstants.MAX_DRIVE_SPEED,
-                ControllerConstants.MAX_TURN_SPEED);
+                drive, xSupplier, ySupplier, rotationSupplier, ControllerConstants.MAX_DRIVE_SPEED);
     }
 
     /**
@@ -114,8 +108,7 @@ public class DriveCommands {
             DoubleSupplier xSupplier,
             DoubleSupplier ySupplier,
             Supplier<Rotation2d> rotationSupplier,
-            LinearVelocity maxVelocity,
-            AngularVelocity maxAngularVelocity) {
+            LinearVelocity maxVelocity) {
 
         // Create PID controller
         ProfiledPIDController angleController = new ProfiledPIDController(
@@ -150,11 +143,7 @@ public class DriveCommands {
                         drive)
 
                 // Reset PID controller when command starts
-                .beforeStarting(() -> {
-                    angleController.setConstraints(new TrapezoidProfile.Constraints(
-                            maxAngularVelocity.in(RadiansPerSecond), ANGLE_MAX_ACCELERATION));
-                    angleController.reset(drive.getRotation().getRadians());
-                });
+                .beforeStarting(() -> angleController.reset(drive.getRotation().getRadians()));
     }
 
     /**

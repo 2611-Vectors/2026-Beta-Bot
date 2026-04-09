@@ -16,7 +16,6 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants.ControllerConstants;
 import frc.robot.Constants.VisionConstants;
@@ -214,18 +213,9 @@ public class RobotContainer {
 
         m_OperatorController.leftTrigger().whileTrue(m_Intake.manualIntakeRPM(() -> true));
 
-        m_DriverController
-                .rightTrigger()
-                .whileTrue(new ParallelCommandGroup(
-                        m_FullSend.manualFullSendRPM(() -> false), m_Transition.manualLowerTransitionRPM(() -> false)));
-
-        m_DriverController
-                .rightBumper()
-                .whileTrue(new ParallelCommandGroup(
-                        m_FullSend.manualFullSendRPM(() -> true), m_Transition.manualLowerTransitionRPM(() -> true)));
-
         m_DriverController.leftTrigger().toggleOnTrue(m_Shooter.manualShooterRPM());
 
+        // NOTE: Right Bumper & Right Trigger are bound inside the AutoTargetDriverControl Command!!!
         m_DriverController
                 .leftBumper()
                 .toggleOnTrue(
