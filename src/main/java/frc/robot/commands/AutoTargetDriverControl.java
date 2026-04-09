@@ -24,9 +24,6 @@ import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
 public class AutoTargetDriverControl extends SequentialCommandGroup {
     /** Creates a new AutoShooterDistance. */
     public AutoTargetDriverControl(
@@ -35,8 +32,6 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
             FullSend m_FullSend,
             Transition m_Transition,
             CommandXboxController m_DriverController) {
-        // Add your commands in the addCommands() call, e.g.
-        // addCommands(new FooCommand(), new BarCommand());
 
         LoggedNetworkNumber tip_to_rpm = new LoggedNetworkNumber("/Shooter/Tip To RPM", TIP_TO_RPM);
 
@@ -75,10 +70,6 @@ public class AutoTargetDriverControl extends SequentialCommandGroup {
                                 () -> -m_DriverController.getLeftY(),
                                 () -> -m_DriverController.getLeftX(),
                                 () -> targetAngle.get())));
-        // new ParallelCommandGroup(
-        //                 m_FullSend.manualFullSendRPM(() -> false),
-        //                 m_Transition.manualTransitionRPM(() -> false))
-        //         .onlyIf(() -> m_DriverController.rightTrigger().getAsBoolean())));
     }
 
     public static double flipAngle(double angle) {
