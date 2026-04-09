@@ -4,16 +4,29 @@
 
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import static frc.robot.Constants.RobotConstants.*;
 
-// NOTE:  Consider using this command inline, rather than writing a subclass.  For more
-// information, see:
-// https://docs.wpilib.org/en/stable/docs/software/commandbased/convenience-features.html
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.path.PathConstraints;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import frc.robot.subsystems.drive.Drive;
+import frc.robot.util.AutoMath;
+
 public class ShootCheckpoint extends SequentialCommandGroup {
-    /** Creates a new ShootCheckpoint. */
-    public ShootCheckpoint() {
-        // Add your commands in the addCommands() call, e.g.
-        // addCommands(new FooCommand(), new BarCommand());
-        addCommands();
+    PathConstraints constraints =
+            new PathConstraints(PATHFIND_VEL, PATHFIND_ACCEL, PATHFIND_ANGULAR_VEL, PATHFIND_ANGULAR_ACCEL);
+
+    public ShootCheckpoint(Drive m_Drive) {
+        Rotation2d bumpRot;
+        if (AutoMath.onLeftSide(m_Drive.getPose())) 
+            bumpRot = new Rotation2d(Units.degreesToRadians(AutoMath.flipAngle(45)));
+        else bumpRot = new Rotation2d(Units.degreesToRadians(45));
+
+        Pose2d bumpPoint = AutoMath.flipLR(m_Drive.getPose(), new Pose2d(RIGHT_BUMP_POS, bumpRot));
+
+        addCommands(AutoBuilder.pathfindToPose(bumpPoint, constraints, VEL_OVER_BUMP));
     }
 }
