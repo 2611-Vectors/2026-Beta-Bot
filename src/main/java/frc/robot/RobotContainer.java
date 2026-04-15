@@ -10,6 +10,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.events.EventTrigger;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -138,10 +139,8 @@ public class RobotContainer {
                 break;
         }
 
+        new EventTrigger("runIntake").and(() -> m_Pivot.intakeCanRun()).whileTrue(m_Intake.setIntakeRPM(() -> 2000.0));
         NamedCommands.registerCommand("autoTarget", new AutoTarget(m_Drive, m_Shooter, m_FullSend, m_Transition));
-        NamedCommands.registerCommand(
-                "runIntake", m_Intake.setIntakeRPM(() -> 2000.0).onlyWhile(() -> m_Pivot.intakeCanRun()));
-        NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
         NamedCommands.registerCommand("runTransition", m_Transition.setLowerTransitionRPM(() -> 1000.0));
         NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
         NamedCommands.registerCommand("intakeOut", m_Pivot.dumbIntakeOut());

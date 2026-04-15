@@ -46,7 +46,7 @@
   ],
   "rotationTargets": [
     {
-      "waypointRelativePos": 0.4962655601659749,
+      "waypointRelativePos": 0.5,
       "rotationDegrees": 140.0
     }
   ],
@@ -69,25 +69,9 @@
   "eventMarkers": [
     {
       "name": "runIntake",
-      "waypointRelativePos": 0.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "runIntake"
-        }
-      }
-    },
-    {
-      "name": "stopIntake",
-      "waypointRelativePos": 2.0,
-      "endWaypointRelativePos": null,
-      "command": {
-        "type": "named",
-        "data": {
-          "name": "stopIntake"
-        }
-      }
+      "waypointRelativePos": 0.10322580645160981,
+      "endWaypointRelativePos": 2.0,
+      "command": null
     }
   ],
   "globalConstraints": {
