@@ -82,6 +82,6 @@ public class Pivot extends SubsystemBase {
         Logger.recordOutput(
                 "Intake/Pivot/Current RPM (Output)", pivotMotor.getRPM() / IntakeConstants.PIVOT_GEAR_RATIO);
         Logger.recordOutput("Intake/Pivot/Current RPM (Motor)", pivotMotor.getRPM());
-        pivotMotor.logCurrents("Intake/Pivot");
+        pivotMotor.logData("Intake/Pivot");
     }
 }

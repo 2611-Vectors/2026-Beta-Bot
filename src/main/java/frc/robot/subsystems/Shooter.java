@@ -83,9 +83,9 @@ public class Shooter extends SubsystemBase {
         Logger.recordOutput("Shooter/At Speed", isAtSpeed());
         Logger.recordOutput("Shooter/Manual Mode", Math.abs(manualRPM.get() - 3050.0) <= 2);
 
-        leftMotor.logCurrents("Shooter/Left");
-        rightMotor.logCurrents("Shooter/Right");
-        leftMotor2.logCurrents("Shooter/Left2");
-        rightMotor2.logCurrents("Shooter/Right2");
+        leftMotor.logData("Shooter/Left");
+        rightMotor.logData("Shooter/Right");
+        leftMotor2.logData("Shooter/Left2");
+        rightMotor2.logData("Shooter/Right2");
     }
 }

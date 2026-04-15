@@ -132,6 +132,6 @@ public class Transition extends SubsystemBase {
 
         // upperLeftMotor.logCurrents("Transition/Upper/Left");
         // upperRightMotor.logCurrents("Transition/Upper/Right");
-        lowerMotor.logCurrents("Transition/Lower");
+        lowerMotor.logData("Transition/Lower");
     }
 }

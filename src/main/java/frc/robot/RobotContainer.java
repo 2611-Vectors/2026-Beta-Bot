@@ -41,7 +41,6 @@ import frc.robot.subsystems.drive.ModuleIO;
 import frc.robot.subsystems.drive.ModuleIOSim;
 import frc.robot.subsystems.drive.ModuleIOTalonFX;
 import frc.robot.util.AutoMath;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -141,7 +140,7 @@ public class RobotContainer {
 
         NamedCommands.registerCommand("autoTarget", new AutoTarget(m_Drive, m_Shooter, m_FullSend, m_Transition));
         NamedCommands.registerCommand(
-                "runIntake", m_Intake.setIntakeRPM(() -> 3000.0).onlyWhile(() -> m_Pivot.intakeCanRun()));
+                "runIntake", m_Intake.setIntakeRPM(() -> 2000.0).onlyWhile(() -> m_Pivot.intakeCanRun()));
         NamedCommands.registerCommand("stopIntake", m_Intake.setIntakeVoltage(() -> 0.0));
         NamedCommands.registerCommand("runTransition", m_Transition.setLowerTransitionRPM(() -> 1000.0));
         NamedCommands.registerCommand("runFullSend", m_FullSend.setFullSendRPM(() -> 5000.0));
@@ -182,23 +181,25 @@ public class RobotContainer {
                 () -> -m_DriverController.getLeftX(),
                 () -> -m_DriverController.getRightX()));
 
-        // Lock to -25° when the A button is held
+        // Lock to -20° when the A button is held
         m_DriverController
                 .a()
                 .whileTrue(DriveCommands.joystickDriveAtAngle(
                         m_Drive,
                         () -> -m_DriverController.getLeftY(),
                         () -> -m_DriverController.getLeftX(),
-                        () -> AutoMath.flipRed(new Rotation2d(Math.toRadians(-25)))));
+                        () -> AutoMath.flipRed(new Rotation2d(Math.toRadians(-20)))
+                                .rotateBy(Rotation2d.kPi)));
 
-        // Lock to 25° when the B button is held
+        // Lock to 20° when the B button is held
         m_DriverController
                 .b()
                 .whileTrue(DriveCommands.joystickDriveAtAngle(
                         m_Drive,
                         () -> -m_DriverController.getLeftY(),
                         () -> -m_DriverController.getLeftX(),
-                        () -> AutoMath.flipRed(new Rotation2d(Math.toRadians(25)))));
+                        () -> AutoMath.flipRed(new Rotation2d(Math.toRadians(20)))
+                                .rotateBy(Rotation2d.kPi)));
 
         // Switch to X pattern when X button is pressed
         m_DriverController.x().onTrue(Commands.runOnce(m_Drive::stopWithX, m_Drive));

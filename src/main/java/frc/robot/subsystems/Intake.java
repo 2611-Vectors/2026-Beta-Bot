@@ -24,8 +24,9 @@ public class Intake extends SubsystemBase {
     private final PidTuner intakePidTuner = new PidTuner("/Intake/", 0.1, 0.0, 0.0, 0.0, 0.13);
 
     public Intake() {
-        intakeMotor.setInverted(InvertedValue.Clockwise_Positive);
-        intakeMotor.setStatorCurrentLimit(80);
+        intakeMotor.setInverted(InvertedValue.CounterClockwise_Positive);
+        intakeMotor.setStatorCurrentLimit(60);
+        intakeMotor.setSupplyCurrentLimit(60, 50, 2);
     }
 
     public Command setIntakeVoltage(Supplier<Double> voltage) {
@@ -47,7 +48,7 @@ public class Intake extends SubsystemBase {
     }
 
     public Command manualIntakeRPM(Supplier<Boolean> reverse) {
-        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 2500.0);
+        LoggedNetworkNumber rpm = new LoggedNetworkNumber("/Intake/Target RPM", 2000.0);
         LoggedNetworkNumber revrpm = new LoggedNetworkNumber("/Intake/Target Reverse RPM", 500.0);
         return setIntakeRPM(() -> (reverse.get() ? -revrpm.get() : rpm.get()));
     }
@@ -60,6 +61,6 @@ public class Intake extends SubsystemBase {
         Logger.recordOutput("Intake/Current RPM (Motor)", intakeMotor.getRPM());
         Logger.recordOutput("Intake/Current RPM (Output)", intakeMotor.getRPM() * IntakeConstants.INTAKE_GEAR_RATIO);
 
-        intakeMotor.logCurrents("Intake");
+        intakeMotor.logData("Intake");
     }
 }

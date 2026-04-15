@@ -48,9 +48,9 @@ public final class Constants {
     }
 
     public static class ShooterConstants {
-        public static final int LEFT_MOTOR_ID = 41; // 61;
+        public static final int LEFT_MOTOR_ID = 41;
         public static final int LEFT_MOTOR2_ID = 42;
-        public static final int RIGHT_MOTOR_ID = 43; // 62;
+        public static final int RIGHT_MOTOR_ID = 43;
         public static final int RIGHT_MOTOR2_ID = 44;
 
         public static final int LEFT_LINEAR_ACTUATOR_ID = 0;
@@ -80,10 +80,10 @@ public final class Constants {
         public static final int WHEEL_MOTOR_ID = 31;
 
         public static final int PIVOT_ENCODER_ID = 1;
-        public static final double PIVOT_ENCODER_OFFSET = 171.0;
+        public static final double PIVOT_ENCODER_OFFSET = 63.0;
 
         public static final double PIVOT_GEAR_RATIO = 1.0 / 25.0;
-        public static final double INTAKE_GEAR_RATIO = 1.0 / 2.0;
+        public static final double INTAKE_GEAR_RATIO = 1.0 / 3.0;
 
         public static final double PIVOT_ANGLE_TOLERANCE = 0.5;
         public static final double PIVOT_IN_ANGLE = 1.5;

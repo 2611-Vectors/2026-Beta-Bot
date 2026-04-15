@@ -72,10 +72,10 @@ public class AutoMath {
 
     public static Pose2d flipRed(Pose2d point) {
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red) {
-            point = (new Pose2d(
+            point = new Pose2d(
                     FIELD_WIDTH - point.getX(),
                     FIELD_HEIGHT - point.getY(),
-                    Rotation2d.fromDegrees(flipAngle(point.getRotation().getDegrees()))));
+                    Rotation2d.fromDegrees(flipAngle(point.getRotation().getDegrees())));
         }
 
         return point;
@@ -83,8 +83,7 @@ public class AutoMath {
 
     public static Rotation2d flipRed(Rotation2d angle) {
         if (DriverStation.getAlliance().orElse(Alliance.Blue) == Alliance.Red)
-            angle = (
-                    Rotation2d.fromDegrees(flipAngle(angle.getDegrees())));
+            angle = Rotation2d.fromDegrees(flipAngle(angle.getDegrees()));
 
         return angle;
     }

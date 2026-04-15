@@ -48,13 +48,15 @@ public class KrakenX60 extends TalonFX {
         m_velocityControl.withEnableFOC(false);
     }
 
-    public void logCurrents(String path) {
+    public void logData(String path) {
         Logger.recordOutput(
                 String.format("%s/StatorCurrent", path),
                 super.getStatorCurrent().getValueAsDouble());
         Logger.recordOutput(
                 String.format("%s/SupplyCurrent", path),
                 super.getSupplyCurrent().getValueAsDouble());
+        Logger.recordOutput(
+                String.format("%s/MotorTemp", path), super.getDeviceTemp().getValueAsDouble());
     }
 
     public void updateSim() {

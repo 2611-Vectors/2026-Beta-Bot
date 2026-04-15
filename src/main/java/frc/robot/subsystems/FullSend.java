@@ -57,6 +57,6 @@ public class FullSend extends SubsystemBase {
         if (fullSendPidTuner.updated()) fullSendMotor.updateFromTuner(fullSendPidTuner);
 
         Logger.recordOutput("/FullSend/Current RPM", fullSendMotor.getVelocity().getValueAsDouble() * 60);
-        fullSendMotor.logCurrents("/FullSend");
+        fullSendMotor.logData("/FullSend");
     }
 }
