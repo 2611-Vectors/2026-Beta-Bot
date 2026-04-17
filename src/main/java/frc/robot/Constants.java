@@ -80,7 +80,7 @@ public final class Constants {
         public static final int WHEEL_MOTOR_ID = 31;
 
         public static final int PIVOT_ENCODER_ID = 1;
-        public static final double PIVOT_ENCODER_OFFSET = 63.0;
+        public static final double PIVOT_ENCODER_OFFSET = 296.0;
 
         public static final double PIVOT_GEAR_RATIO = 1.0 / 25.0;
         public static final double INTAKE_GEAR_RATIO = 1.0 / 3.0;
