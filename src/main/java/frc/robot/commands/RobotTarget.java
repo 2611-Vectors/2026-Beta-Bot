@@ -13,7 +13,6 @@ import frc.robot.subsystems.FullSend;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Shooter;
 import frc.robot.subsystems.Transition;
-import frc.robot.subsystems.drive.Drive;
 import frc.robot.util.AutoMath;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
@@ -24,8 +23,7 @@ import org.littletonrobotics.junction.networktables.LoggedNetworkNumber;
 public class RobotTarget extends SequentialCommandGroup {
 
     /** Creates a new AutoShooterDistance. */
-    public RobotTarget(
-            Drive m_Drive, Shooter m_Shooter, Intake m_Intake, FullSend m_FullSend, Transition m_Transition) {
+    public RobotTarget(Shooter m_Shooter, Intake m_Intake, FullSend m_FullSend, Transition m_Transition) {
         // Add your commands in the addCommands() call, e.g.
         // addCommands(new FooCommand(), new BarCommand());
         LoggedNetworkNumber dist = new LoggedNetworkNumber("/Shooter/Robot Distance", 0.0);
